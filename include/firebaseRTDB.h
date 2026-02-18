@@ -99,8 +99,8 @@
 
 #include <Arduino.h>
 #include <FirebaseClient.h>
-#include "secretData.h"
 #include <WiFiClientSecure.h>
+#include "secretData.h"
 #include "serialOutput.h"
 
 const String Web_API_KEY  = secretData.getWebApiKey();
@@ -118,14 +118,9 @@ RealtimeDatabase db;
 
 SerialOutput serialOutput;
 
-// Variabel timer dan data
-unsigned long lastSendTime = 0;
-const unsigned long sendInterval = 10000; // 10 detik
-int sensorValue = 0;
-
-// Callback untuk menangani hasil Firebase
+// Callback
 inline void processData(AsyncResult &aResult) {
-  if (!aResult.isResult()) return;  // abaikan jika bukan hasil
+  if (!aResult.isResult()) return;
   if (aResult.isError()) {
     Serial.printf("Firebase Error: %s\n", aResult.error().message().c_str());
     return;
