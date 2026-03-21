@@ -15,7 +15,7 @@ class UltrasonicSensor {
     }
 
     // Inisialisasi pin
-    void init(int trig, int echo) {
+    void init(const byte trig, const byte echo) {
       trigPin = trig;
       echoPin = echo;
 

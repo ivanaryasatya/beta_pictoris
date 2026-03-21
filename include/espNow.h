@@ -27,7 +27,7 @@ public:
     // ==========================
     // INIT
     // ==========================
-    static bool begin(int channel = 1) {
+    //static bool begin(int channel = 1) {
         WiFi.mode(WIFI_STA);
         WiFi.disconnect();
         if (esp_now_init() != ESP_OK) {

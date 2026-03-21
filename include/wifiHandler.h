@@ -7,6 +7,7 @@ class WifiHandler {
 private:
     String ssid;
     String password;
+    byte attempts;
 
 public:
     WifiHandler() {
@@ -22,7 +23,6 @@ public:
 
         WiFi.begin(ssid.c_str(), password.c_str());
         Serial.print("Menghubungkan ke WiFi");
-        int attempts = 0;
         
         while (WiFi.status() != WL_CONNECTED && attempts < 20) {
             Serial.print(".");
@@ -39,6 +39,10 @@ public:
         }
     }
 
+    void setAttempts(const byte newAttempts) {
+        attempts = newAttempts;
+    }
+    
     void disconnect() {
         WiFi.disconnect(true);
         Serial.println("WiFi terputus.");

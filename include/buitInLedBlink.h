@@ -11,7 +11,7 @@ static bool ledBlinkInitialized = false;
 void start() {
   if (!ledBlinkInitialized)
   {
-    pinMode(builtinLedPin, OUTPUT);
+    pinMode(pins.builtinLed, OUTPUT);
     ledBlinkInitialized = true;
   }
   ledBlinkEnabled = true;
@@ -30,7 +30,7 @@ void run()
     previousMillisLedBlink = currentMillisLedBlink;
 
     ledBlinkLedState = !ledBlinkLedState;
-    digitalWrite(builtinLedPin, ledBlinkLedState);
+    digitalWrite(pins.builtinLed, ledBlinkLedState);
   }
 }
 
@@ -38,5 +38,5 @@ void stop()
 {
   ledBlinkEnabled = false;
   ledBlinkLedState = LOW;
-  digitalWrite(builtinLedPin, LOW);
+  digitalWrite(pins.builtinLed, LOW);
 }

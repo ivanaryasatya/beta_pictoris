@@ -1,3 +1,6 @@
+#pragma once
+#include <Arduino.h>
+const String protocolMapJson = R"data(
 {
     "SPEED": "9O",
     "P_SPEED": "9P",
@@ -37,3 +40,4 @@
     "line": "L0",
     "us": "U0"
 }
+)data";

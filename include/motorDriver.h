@@ -2,6 +2,9 @@
 
 #include <Arduino.h>
 
+using cuint = const unsigned int;
+using cbyte = const byte;
+
 class MotorDriver {
   private:
     int a_in1, a_in2, a_en;
@@ -10,7 +13,7 @@ class MotorDriver {
     int pwm_res;
     int channelA, channelB;
 
-    void driveMotor(int in1, int in2, int en, int channel, int speed) {
+    void driveMotor(cbyte in1, cbyte in2, cbyte en, cbyte channel, int speed) {
       speed = constrain(speed, -255, 255);
 
       if (speed == 0) {
@@ -34,10 +37,10 @@ class MotorDriver {
 
   public:
     // Constructor
-    MotorDriver(int _a_in1, int _a_in2, int _a_en,
-                int _b_in1, int _b_in2, int _b_en,
-                int _channelA, int _channelB,
-                int _pwm_freq = 20000, int _pwm_res = 8) {
+    MotorDriver(cuint _a_in1, cuint _a_in2, cuint _a_en,
+                cuint _b_in1, cuint _b_in2, cuint _b_en,
+                cuint _channelA, cuint _channelB,
+                cuint _pwm_freq = 20000, cuint _pwm_res = 8) {
       a_in1 = _a_in1; a_in2 = _a_in2; a_en = _a_en;
       b_in1 = _b_in1; b_in2 = _b_in2; b_en = _b_en;
       channelA = _channelA; channelB = _channelB;
@@ -57,11 +60,11 @@ class MotorDriver {
       ledcAttachPin(b_en, channelB);
     }
 
-    void setMotorA(int speed) {
+    void setMotorA(cuint speed) {
       driveMotor(a_in1, a_in2, a_en, channelA, speed);
     }
 
-    void setMotorB(int speed) {
+    void setMotorB(cuint speed) {
       driveMotor(b_in1, b_in2, b_en, channelB, speed);
     }
 
