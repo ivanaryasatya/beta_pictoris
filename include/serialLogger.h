@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
+#include "firebaseHandler.h"
 
 #if defined(ESP32)
   #define DEVICE_NAME "ESP32"
@@ -52,9 +53,10 @@ class Logger {
     void println(const String &text = "") {
       if (!enableLog) return;
       if (text != "") {
-          buffer = "";
-          addLine(text);
+        buffer = "";
+        addLine(text);
       }
+
       Serial.print(">> ");
       Serial.print(DEVICE_NAME);
       Serial.print(" [");

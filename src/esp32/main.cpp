@@ -69,6 +69,7 @@ const char* spaceStr = " ";
 const char* NANO_STR = "NANO";
 const char* ESP32_STR = "ESP32";
 const char* RBT_STR = "RBT";
+int espResetTimer = -1;
 
 MotorDriver motor(pins.wheelDriver_r.ENA, pins.wheelDriver_r.IN1, pins.wheelDriver_r.IN2, pins.wheelDriver_r.IN3, pins.wheelDriver_r.IN4, pins.wheelDriver_r.ENB);
 MotorDriver motor2(pins.wheelDriver_l.ENA, pins.wheelDriver_l.IN1, pins.wheelDriver_l.IN2, pins.wheelDriver_l.IN3, pins.wheelDriver_l.IN4, pins.wheelDriver_l.ENB);
@@ -217,6 +218,9 @@ bool commandRun(const String &target, const String &command, const String value[
                 slog.enable(false);
                 slog.println("Serial log disabled");
             }
+        } else if (command == "restart") {
+            slog.println(logMes.esp32Restarting);
+            ESP.restart();
         } else {
             slog.println(logMes.invalidCommand);
             return false;
@@ -434,6 +438,37 @@ void mainFunction(void *pvParameters) {
             lastTime = millis();
         }
         
+        //ESP32 restart timer============================
+        static unsigned long resetTimerLastMillis = 0;
+        static bool isTimerActive = false;
+
+        if (espResetTimer > 0 && !isTimerActive) {
+            resetTimerLastMillis = millis();
+            isTimerActive = true;
+
+            slog.print(logMes.esp32WillRestartIn);
+            slog.print(String(espResetTimer / 1000));
+            slog.println(logMes.seconds);
+        } 
+
+        else if (espResetTimer <= 0 && isTimerActive) {
+            isTimerActive = false;
+            slog.println("Restart dibatalkan.");
+        }
+
+        if (isTimerActive) {
+            if (millis() - resetTimerLastMillis >= (unsigned long)espResetTimer) {
+                slog.println(logMes.esp32Restarting);
+                isTimerActive = false;
+                espResetTimer = 0; 
+
+                delay(500);
+                ESP.restart();
+            }
+        }
+        //ESP32 restart timer endl=========================
+        
+
         static unsigned long coreLastMillis = 0;
         if (millis() - coreLastMillis >= 2000) {
             slog.println("core one is alive");

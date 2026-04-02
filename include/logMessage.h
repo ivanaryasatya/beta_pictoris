@@ -29,6 +29,8 @@ struct LogMessage {
     const char* wifiLocalIP = "wifi local IP: ";
     const char* eepromSaveSuccess = "successfully saved to EEPROM";
     const char* eepromSaveFailed = "failed to save to EEPROM";
+    const char* esp32WillRestartIn = "ESP32 will restart in ";
+    const char* seconds = " seconds";
     
 
 } logMes;
