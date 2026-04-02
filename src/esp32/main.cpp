@@ -1,6 +1,6 @@
 
 #include <Arduino.h> 
-#include "FirebaseHandler.h"
+//#include "FirebaseHandler.h"
 #include "eepromManager.h"
 #include "secretData.h"
 #include "protocolMap.h"
@@ -15,10 +15,11 @@
 #include "serialLogger.h" 
 #include "eepromPointer.h"
 #include "logMessage.h"
-#include "wifiHandler.h"
+//#include "wifiHandler.h"
 #include "motorDriver.h"
 #include "wheelDrive.h"
 #include "gamepadHandler.h"
+#include <pgmspace.h>
 
 // #define WIFI_SSID secretData.WIFI_SSID
 // #define WIFI_PASSWORD secretData.WIFI_PASSWORD
@@ -38,7 +39,7 @@ struct StringArray10 {
     String data[10];
 };
 
-FirebaseHandler firebase;
+//FirebaseHandler firebase;
 EEPROMManager memory;
 MutexData<int> sendNumber(0);
 MutexData<String> interCoreCmdCommand("");
@@ -52,7 +53,7 @@ int test = 0;
 bool serialLogState = false;
 
 // Command parsing
-String target, command, value[10];
+String target, command, value[16];
 int cmdMaxValue, cmdValueCount;
 
 String serialInput;
@@ -76,6 +77,7 @@ MotorDriver motor2(pins.wheelDriver_l.ENA, pins.wheelDriver_l.IN1, pins.wheelDri
 
 // Instansiasi Eksekutor Kendaraan Mecanum (motor2 = Kiri, motor = Kanan)
 MecanumDrive mecanum(&motor2, &motor);
+
 
 // Fungsi filter untuk menghindari spam output ke serial monitor
 bool isGamepadChanged(const GamepadState& current, const GamepadState& last) {
@@ -171,7 +173,7 @@ bool commandRun(const String &target, const String &command, const String value[
         }
     }
 
-    else if (target == ESP32_STR) {
+    else if (target == "esp32" || target == ESP32_STR) {
         if (command == "restart") {
             slog.println(logMes.esp32Restarting);
             ESP.restart();
@@ -180,24 +182,19 @@ bool commandRun(const String &target, const String &command, const String value[
         } else if (command == "memGetAll") {
             slog.println(memory.getAll());
         } else if (command == "wifiBegin") {
-            if (valueCount >= 2) {
-                wifi.connect();
-            } else {
-                slog.add(logMes.commandValueLessThanExpected);
-                slog.add(String(valueCount));
-                slog.println();
-            }
+            // if (valueCount >= 2) {
+            //     wifi.connect();
+            // } else {
+            //     slog.add(logMes.commandValueLessThanExpected);
+            //     slog.add(String(valueCount));
+            //     slog.println();
+            // }
         } else if (command == "wifiStatus") {
-            slog.println(wifi.isConnected() ? logMes.wifiConnected : logMes.wifiNotConnected);
+            // slog.println(wifi.isConnected() ? logMes.wifiConnected : logMes.wifiNotConnected);
         } else if (command == "wifiLocalIP") {
-            slog.add(logMes.wifiLocalIP);
-            slog.add(wifi.getIP());
-            slog.println();
-        } else if (command == "wifiScan") {
-        } else if (command == "wifiList") {
-        } else if (command == "sendNumber") {
-            int num = value[0].toInt();
-            sendNumber.set(num);
+            // slog.add(logMes.wifiLocalIP);
+            // slog.add(wifi.getIP());
+            // slog.println();
         } else if (command == "freeHeap") {
             slog.add("Free heap: ");
             slog.add(String(ESP.getFreeHeap()));
@@ -225,18 +222,19 @@ bool commandRun(const String &target, const String &command, const String value[
             slog.println(logMes.invalidCommand);
             return false;
         }
-    } else if (target == NANO_STR) {
+    } else if (target == "nano" ||target == NANO_STR) {
         if (command == "sendCommand" && valueCount >= 1) {
             uart.send(uart.mapId.USER_CMD, 0, (byte*)value[0].c_str());
         }
     } else {
-        slog.println(logMes.invalidCommandTarget);
+        slog.add(logMes.invalidCommandTarget);
+        slog.add(spaceStr);
+        slog.add(target);
+        slog.println();
         return false;
     }
     return false;
 }
-
-
 
 
 
@@ -276,10 +274,12 @@ void mainFunction(void *pvParameters) {
 
 
 
+
+
     while (true) {
         uart.update();
 
-        //Gamepad
+        //Gamepad=========================================
         if (Ps3.isConnected()) {
             GamepadState current_state = globalGamepadState.get();
             unsigned long current_millis = millis();
@@ -295,6 +295,7 @@ void mainFunction(void *pvParameters) {
                 }
             }
 
+            //Gamepad action=============================
             if (isGamepadChanged(current_state, last_state)) {
                 
                 if (current_state.cross && !last_state.cross) {
@@ -386,15 +387,26 @@ void mainFunction(void *pvParameters) {
 
                 last_state = current_state;
             }
+            //Gamepad action end=========================
+        }
+        //Gamepad end================================
 
-        } //Gamepad
 
-
-        //Serial communication
+        //Serial communication================================
         if (Serial.available()) {
             serialInput = Serial.readStringUntil('\n');
             serialInput.trim();
+            // Bersihkan sisa variabel lama
+            target = ""; command = "";
+            for (int i = 0; i < 16; i++) value[i] = ""; // Harus dibongkar juga untuk mencegah "ghost data"
+
+            // Eksekusi Parsing (Pastikan ngirim cmdMaxValue yang BUKAN 0)
+            cmdMaxValue = sizeof(value) / sizeof(value[0]);
             parseCmd(serialInput, target, command, value, cmdMaxValue, cmdValueCount);
+            
+            // Lakukan print DEBUGGING SETELAH fungsi parsing!
+            slog.println("Received serial input: " + serialInput);
+            slog.println("Hasil Parsing -> target: " + target + " | command: " + command + " | value: " + value[0]);
             
             if (serialInput == "s") {
                 static bool isSerialInputEnabled = false; 
@@ -405,23 +417,26 @@ void mainFunction(void *pvParameters) {
                 slog.println();
             }
 
+            // --- PROTEKSI TARGET ---
+            // Hanya eksekusi commandRun() jika var target tidak dibiarkan kosong
             if (target == "") {
-                slog.println(logMes.invalidCommandTarget);
+                // Biarkan saja (Tidak usah lempar error karena ini bisa saja cuma ketikan tes 's')
             } else if (command == "") {
                 slog.println(logMes.invalidCommand);
             } else {
                 cmdValueCount = sizeof(value) / sizeof(value[0]);
                 interCoreCmdCommand.set(command);
                 interCoreCmdTarget.set(target);
-                
                 StringArray10 tempValue;
                 for (int i = 0; i < 10; i++) {
                     tempValue.data[i] = value[i];
                 }
                 interCoreCmdValue.set(tempValue);
+
                 commandRun(target, command, value, cmdValueCount);
             }
-        } 
+        }
+        //Serial communication end================================
 
         static unsigned long lastTime = 0;
         static unsigned long loopCount = 0;
@@ -508,7 +523,10 @@ void wlConnection(void *pvParameters) {
 
     if (!wlConnectionFunctionHasRunOnce) {
         initGamepad(secretData.PS3_MAC_ADDRESS);
-        wifi.connect();
+        
+        // if (wifi.connect()) {
+            
+        // }
     //     firebase.begin(
     //         secretData.Web_API_KEY,
     //         secretData.DATABASE_URL,

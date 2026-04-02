@@ -1,0 +1,7 @@
+{
+  "esp32.setLed": "l3",
+  "esp32.setFan": "f1",
+  "nasno.setLed": "l4",
+  "robot.move": "M1",
+  "robot.stop": "M2"
+}

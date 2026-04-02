@@ -1,6 +1,5 @@
 #pragma once
 #include <Arduino.h>
-#include <pgmspace.h>
 
 struct LogMessage {
     const char* wifiHasConnected = "wifi is already connected";
@@ -31,6 +30,26 @@ struct LogMessage {
     const char* eepromSaveFailed = "failed to save to EEPROM";
     const char* esp32WillRestartIn = "ESP32 will restart in ";
     const char* seconds = " seconds";
-    
 
 } logMes;
+
+
+const char s0[] PROGMEM = "OFF";
+const char s1[] PROGMEM = "ON";
+const char s2[] PROGMEM = "ERROR";
+
+const char* const statusText[] PROGMEM = { s0, s1, s2 };
+
+void printStatus(uint8_t status) {
+    char buffer[10];
+
+    const char* ptr = (const char*)pgm_read_ptr(&statusText[status]);
+    strcpy_P(buffer, ptr);
+
+    Serial.println(buffer);
+}
+
+    printStatus(0);
+    printStatus(1);
+    printStatus(2);
+

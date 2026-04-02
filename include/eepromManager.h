@@ -1,11 +1,45 @@
 #pragma once
 #include <Arduino.h>
 #include <EEPROM.h>
+#include "eepromPointer.h"
 
 class EEPROMManager {
-
 private:
     int size;
+
+    void cleanUp() {
+        int validCount = sizeof(dataId) / sizeof(dataId[0]);
+        bool needsCheck = true;
+        
+        while(needsCheck) {
+            needsCheck = false;
+            bool isStart = true;
+            
+            for(int i=0; i<size; i++) {
+                char c = EEPROM.read(i);
+                if (c == 0xFF) break; 
+                
+                if (isStart) {
+                    bool isValid = false;
+                    for(int j=0; j<validCount; j++) {
+                        if((byte)c == dataId[j]) {
+                            isValid = true;
+                            break;
+                        }
+                    }
+                    
+                    if(!isValid) {
+                        remove(c); // hapus pointer tidak dikenal dan datanya
+                        needsCheck = true; // ulangi cek setelah struktur EEPROM berubah karena remove()
+                        break; 
+                    }
+                }
+                
+                isStart = (c == '\n');
+            }
+        }
+    }
+
     int findEnd() {
         for(int i=0;i<size;i++){
             if(EEPROM.read(i)==0xFF) return i;
@@ -20,7 +54,6 @@ private:
             if(c != 0xFF){
                 EEPROM.write(writeIndex++,c);
             }
-
         }
 
         for(int i=writeIndex;i<size;i++){
@@ -35,6 +68,7 @@ public:
     void begin(int eepromSize){
         size = eepromSize;
         EEPROM.begin(size);
+        cleanUp(); // Panggil fungsi pembersihan sampah secara otomatis di awal
     }
 
     /* =========================
