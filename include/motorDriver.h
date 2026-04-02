@@ -10,6 +10,9 @@ private:
     uint8_t _in4;
     uint8_t _enB;
 
+    bool _reverseA = false;
+    bool _reverseB = false;
+
 public:
     /**
      * @brief Inisialisasi pin driver L298N.
@@ -45,11 +48,24 @@ public:
     }
 
     /**
+     * @brief Mengatur polaritas / arah putaran default motor.
+     * Sangat berguna jika arah roda terbalik, tanpa perlu mencabut kabel fisik.
+     * @param reverseA True untuk membalikkan arah putaran Motor A
+     * @param reverseB True untuk membalikkan arah putaran Motor B
+     */
+    void setPolarity(bool reverseA, bool reverseB) {
+        _reverseA = reverseA;
+        _reverseB = reverseB;
+    }
+
+    /**
      * @brief Kontrol Motor A (kiri).
      * @param speed Kecepatan motor, nilai berkisar -255 hingga 255.
      *              (Positif = maju, Negatif = mundur, 0 = berhenti)
      */
     void setMotorA(int speed) {
+        if (_reverseA) speed = -speed;
+
         // Membatasi nilai agar tidak di luar rentang -255 sampai 255
         speed = constrain(speed, -255, 255);
         
@@ -77,6 +93,8 @@ public:
      *              (Positif = maju, Negatif = mundur, 0 = berhenti)
      */
     void setMotorB(int speed) {
+        if (_reverseB) speed = -speed;
+
         // Membatasi nilai agar tidak di luar rentang -255 sampai 255
         speed = constrain(speed, -255, 255);
         

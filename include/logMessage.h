@@ -1,5 +1,6 @@
 #pragma once
 #include <Arduino.h>
+#include <pgmspace.h>
 
 struct LogMessage {
     const char* wifiHasConnected = "wifi is already connected";
@@ -24,7 +25,10 @@ struct LogMessage {
     const char* invalidCommandTarget = "invalid command target";
     const char* invalidCommand = "invalid command";
     const char* esp32Restarting = "ESP32 is restarting...";
-    const char* commandValueLessThanExpected = "command value count is less than";
+    const char* commandValueLessThanExpected = "command value count is less than ";
     const char* wifiLocalIP = "wifi local IP: ";
+    const char* eepromSaveSuccess = "successfully saved to EEPROM";
+    const char* eepromSaveFailed = "failed to save to EEPROM";
+    
 
 } logMes;

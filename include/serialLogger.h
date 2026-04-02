@@ -16,6 +16,8 @@ class Logger {
   private:
     String buffer;
     bool enableLog = false;
+    bool rtdbSyncLog = false;
+    bool BTlog = false;
 
   public:
     void add(String text) {
@@ -23,7 +25,8 @@ class Logger {
     }
 
     void addLine(String text) {
-      buffer += text + "\n";
+      buffer += text;
+      buffer += "\n";
     }
 
     void clear() {
@@ -47,23 +50,31 @@ class Logger {
     }
 
     void println(const String &text = "") {
-        if (!enableLog) return;
-        if (text != "") {
-            buffer = "";
-            addLine(text);
-        }
-        Serial.print(">> ");
-        Serial.print(DEVICE_NAME);
-        Serial.print(" [");
-        Serial.print(millis());
-        Serial.print(" ms]: ");
+      if (!enableLog) return;
+      if (text != "") {
+          buffer = "";
+          addLine(text);
+      }
+      Serial.print(">> ");
+      Serial.print(DEVICE_NAME);
+      Serial.print(" [");
+      Serial.print(millis());
+      Serial.print(" ms]: ");
 
-        Serial.println(buffer);
-        clear();
+      Serial.println(buffer);
+      clear();
     }
 
     void enable(const bool state) {
-        enableLog = state;
+      enableLog = state;
+    }
+
+    void enableRtdbSyncLog(const bool state) {
+      rtdbSyncLog = state;
+    }
+
+    void enableBTLog(const bool state) {
+      BTlog = state;
     }
 };
 
