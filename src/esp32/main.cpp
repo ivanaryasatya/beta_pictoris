@@ -31,12 +31,17 @@
 using cbyte = const byte;
 using uint = unsigned int;
 
+// Struct wrapper untuk array String[10]
+struct StringArray10 {
+    String data[10];
+};
+
 FirebaseHandler firebase;
 EEPROMManager memory;
 MutexData<int> sendNumber(0);
 MutexData<String> interCoreCmdCommand("");  
 MutexData<String> interCoreCmdTarget("");
-MutexData<String[10]> interCoreCmdValue;
+MutexData<StringArray10> interCoreCmdValue;
 
 uint count = 0;
 cbyte esp32 = 0;
@@ -163,7 +168,12 @@ void mainFunction(void *pvParameters) {
             parseCmd(serialInput, target, command, value, cmdMaxValue, cmdValueCount);
             
             if (serialInput == "s") {
-                slog.enable(true);
+                static bool isSerialInputEnabled = false; 
+                isSerialInputEnabled = !isSerialInputEnabled; 
+                slog.enable(isSerialInputEnabled);
+                slog.add("Log status: ");
+                slog.add(isSerialInputEnabled ? "ON" : "OFF");
+                slog.println();
             }
 
             if (target == "") {
@@ -174,7 +184,13 @@ void mainFunction(void *pvParameters) {
                 cmdValueCount = sizeof(value) / sizeof(value[0]);
                 interCoreCmdCommand.set(command);
                 interCoreCmdTarget.set(target);
-                interCoreCmdValue.set(value);
+                
+                // Copy array ke struct wrapper
+                StringArray10 tempValue;
+                for (int i = 0; i < 10; i++) {
+                    tempValue.data[i] = value[i];
+                }
+                interCoreCmdValue.set(tempValue);
 
                 commandRun(target, command, value, cmdValueCount);
             }
@@ -196,8 +212,8 @@ void mainFunction(void *pvParameters) {
         }
         
         static unsigned long coreLastMillis = 0;
-        if (millis() - coreLastMillis >= 1000) {
-            Serial.println("core one is alive");
+        if (millis() - coreLastMillis >= 2000) {
+            slog.println("core one is alive");
             coreLastMillis = millis();
         }
 
@@ -256,8 +272,8 @@ void internet(void *pvParameters) {
         }
 
         static unsigned long coreLastMillis = 0;
-        if (millis() - coreLastMillis >= 1000) {
-            Serial.println("core zero is alive");
+        if (millis() - coreLastMillis >= 2000) {
+            slog.println("core zero is alive");
             coreLastMillis = millis();
         }
 
