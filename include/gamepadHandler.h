@@ -4,6 +4,8 @@
 
 #include <Arduino.h>
 #include <Ps3Controller.h>
+#include "esp_bt_device.h"
+#include "esp_bt.h"
 
 /**
  * Ini adalah header file untuk menghandle koneksi, input dan fitur
@@ -128,13 +130,12 @@ inline void onPs3Event() {
  * @param mac_address MAC Address Bluetooth dari ESP32 Anda.
  */
 inline void initGamepad(const char* mac_address) {
-    // Melekatkan callback untuk menerima event
     Ps3.attach(onPs3Event);
-    // Melekatkan callback untuk koneksi berhasil
     Ps3.attachOnConnect(onPs3Connect);
-    
-    // Mulai listening koneksi PS3 dengan MAC address ini
     Ps3.begin(mac_address);
+    esp_bt_dev_set_device_name("Ilmi kontol");
+    esp_bredr_tx_power_set(ESP_PWR_LVL_P9, ESP_PWR_LVL_P9);
+
     Serial.print("\n[INFO] Gamepad Controller Diinisialisasi.");
     Serial.print(" Menunggu koneksi PS3 di MAC: ");
     Serial.println(mac_address);

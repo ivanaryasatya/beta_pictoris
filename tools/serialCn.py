@@ -4,7 +4,7 @@ import sys
 import time
 import json
 
-# Load command map
+
 try:
     with open("C:/Users/ROG/Documents/PlatformIO/Projects/beta_pictoris/tools/command_map.json", "r") as f:
         COMMAND_MAP = json.load(f)
@@ -103,57 +103,57 @@ try:
     while True:
         data_keluar = input()
         
-        # 1. Cek apakah user ingin keluar
+        
         if data_keluar.lower() == 'x':
             print("[Sistem] Menutup program...")
             break
             
-        # 2. Cek apakah input diawali dengan '>'
+        
         if not data_keluar.startswith(">"):
             print("[Error] Perintah ditolak! Input harus diawali dengan tanda '>' (contoh: >target.command)")
             print("[TX] > ", end="", flush=True)
             continue
             
-        # 3. Proses pengiriman data
+        
         if is_connected and ser and ser.is_open:
             try:
-                # Dapatkan hasil parse (contoh: "aa.restart" atau "A9")
+                
                 parsed = parse_command(data_keluar)
                 
-                # Tampilkan hasil parse di layar (tidak dikirim)
+                
                 print(f"[Sistem] Konversi Kode : {parsed}")
                 
-                # Pisahkan shortcode dengan parameter
-                parsed_parts = parsed.split(".")
-                shortcode_hex = parsed_parts[0] # Mengambil "aa"
                 
-                # Ubah shortcode menjadi 1 byte (biner murni)
+                parsed_parts = parsed.split(".")
+                shortcode_hex = parsed_parts[0] 
+                
+                
                 try:
                     byte_data = bytes.fromhex(shortcode_hex)
                 except ValueError:
-                    # Akan error jika command tidak ada di map dan menghasilkan misal ">target"
+                    
                     print(f"[Error] '{shortcode_hex}' bukan format Heksadesimal 2 karakter yang valid!")
                     print("[TX] > ", end="", flush=True)
                     continue
 
-                # Rangkai payload dan tampilkan visualisasi Hex ke layar
+                
                 if len(parsed_parts) > 1:
-                    # Gabungkan kembali parameter (misal: ".restart")
+                    
                     params_str = "." + ".".join(parsed_parts[1:])
                     
-                    # Tambahan Print untuk visualisasi Hex dan Parameter
+                    
                     print(f"[Sistem] Mengirim      : 0x{shortcode_hex.lower()}{params_str}")
                     
-                    # byte_data berupa biner, params_str di-encode ke biner, lalu digabung
+                    
                     payload = byte_data + params_str.encode('utf-8') + b"\r\n"
                 else:
-                    # Tambahan Print untuk visualisasi Hex (tanpa parameter)
+                    
                     print(f"[Sistem] Mengirim      : 0x{shortcode_hex.lower()}")
                     
-                    # Jika tidak ada parameter, hanya kirim byte heksanya saja
+                    
                     payload = byte_data + b"\r\n"
                 
-                # Kirim data biner campuran tersebut ke serial
+                
                 ser.write(payload)
                 
                 print("[TX] > ", end="", flush=True)

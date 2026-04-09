@@ -48,15 +48,17 @@ MutexData<byte> mutexCmdValueCount(0);
 uint count = 0;
 cbyte esp32 = 0;
 cbyte nano = 1;
+byte gmpDeadZone = 2;
 int test = 0;
-bool serialLogState = false;
+bool serialLogState = true;
+bool gamepadIsConnected = false;
 
 // Command parsing
 String target, command, value[16];
 int cmdMaxValue, cmdValueCount;
 
 String serialInput;
-UARTProtocol uart(Serial);
+UARTProtocol uart(Serial1);
 
 MutexData<GamepadState> globalGamepadState;
 GamepadState last_state;
@@ -65,11 +67,8 @@ unsigned long last_rumble_burst = 0;
 bool is_rumble_burst_active = false;
 const unsigned long RUMBLE_BURST_DURATION = 200;
 const char* spaceStr = " ";
-const char* NANO_STR = "NANO";
-const char* ESP32_STR = "ESP32";
-const char* RBT_STR = "RBT";
 int espResetTimer = -1;
-int espSleepTimer = -1;
+int espSleepTime = -1;
 
 MotorDriver motor(pins.wheelDriver_r.ENA, pins.wheelDriver_r.IN1, pins.wheelDriver_r.IN2, pins.wheelDriver_r.IN3, pins.wheelDriver_r.IN4, pins.wheelDriver_r.ENB);
 MotorDriver motor2(pins.wheelDriver_l.ENA, pins.wheelDriver_l.IN1, pins.wheelDriver_l.IN2, pins.wheelDriver_l.IN3, pins.wheelDriver_l.IN4, pins.wheelDriver_l.ENB);
@@ -81,13 +80,13 @@ Servo barrelServo;
 
 // Fungsi filter untuk menghindari spam output ke serial monitor
 bool isGamepadChanged(const GamepadState& current, const GamepadState& last) {
-    if (abs(current.stick_lx - last.stick_lx) > 2) return true;
-    if (abs(current.stick_ly - last.stick_ly) > 2) return true;
-    if (abs(current.stick_rx - last.stick_rx) > 2) return true;
-    if (abs(current.stick_ry - last.stick_ry) > 2) return true;
+    if (abs(current.stick_lx - last.stick_lx) > gmpDeadZone) return true;
+    if (abs(current.stick_ly - last.stick_ly) > gmpDeadZone) return true;
+    if (abs(current.stick_rx - last.stick_rx) > gmpDeadZone) return true;
+    if (abs(current.stick_ry - last.stick_ry) > gmpDeadZone) return true;
 
-    if (abs(current.analog_l2 - last.analog_l2) > 2) return true;
-    if (abs(current.analog_r2 - last.analog_r2) > 2) return true;
+    if (abs(current.analog_l2 - last.analog_l2) > gmpDeadZone) return true;
+    if (abs(current.analog_r2 - last.analog_r2) > gmpDeadZone) return true;
 
     if (current.cross != last.cross) return true;
     if (current.square != last.square) return true;
@@ -111,8 +110,10 @@ bool isGamepadChanged(const GamepadState& current, const GamepadState& last) {
     return false;
 }
 
-void uartCommand(byte cmd, byte id, byte *data, byte len) {
-
+void uartPing(byte cmd, byte id, byte *data, byte len) {
+    if (cmd == uart.mapId.PING) {
+        uart.send(uart.mapId.PONG, 0, NULL);
+    }
 }
 
 
@@ -120,6 +121,28 @@ void cmdValueError(const byte expected, const byte actual) {
     slog.add(logMes.commandValueLessThanExpected);
     slog.add(String(cmdValueCount));
     slog.println();
+}
+
+/*
+true = light sleep
+false = deep sleep
+time in second
+*/
+void espSleep(const bool isLightmode, const unsigned int time) {
+    esp_sleep_enable_timer_wakeup(time * 1000000ULL);
+    if (isLightmode == 0) {
+        esp_light_sleep_start();
+    } else {
+        esp_deep_sleep_start();
+    }
+}
+
+bool checkValue(const byte valueCount, const byte minCount) {
+    if (valueCount < minCount) {
+        cmdValueError(minCount, cmdValueCount);
+        return false;
+    }
+    return true;
 }
 
 // Fungsi cek boolean dari string
@@ -137,12 +160,12 @@ struct State {
         const char* c = s.c_str();
 
         if (strcmp(c, "1") == 0 || strcmp(c, "true") == 0 || strcmp(c, "on") == 0 || 
-            strcmp(c, "enable") == 0 || strcmp(c, "yes") == 0) {
+            strcmp(c, "enable") == 0 || strcmp(c, "yes") == 0 || strcmp(c, "1") == 0) {
             return true;
         }
 
         if (strcmp(c, "0") == 0 || strcmp(c, "false") == 0 || strcmp(c, "off") == 0 || 
-            strcmp(c, "disable") == 0 || strcmp(c, "no") == 0) {
+            strcmp(c, "disable") == 0 || strcmp(c, "no") == 0 || strcmp(c, "0") == 0){
             return false;
         } 
         slog.println(logMes.invalidCommand);
@@ -159,29 +182,37 @@ struct State {
     }
 } state;
 
+void uartCommandRun(byte uartCmd, byte id, byte *data, byte len) {
+    if (uartCmd == uart.mapId.PING) {
+        uart.send(uart.mapId.PONG, 0, NULL);
+    } else if (uartCmd == uart.mapId.RESTART) {
+        espResetTimer = data[0] * 1000;
+    } else if (uartCmd == uart.mapId.USER_CMD) {
+    }
+}
 
 bool commandRun(const String &target, const String &command, const String value[], const byte valueCount) {
 
     // format: target.command.value1.value2;
     // contoh: esp32.memSave.q.MyWiFi; atau nano.led.on;
-    if (target == "rbt") {
-        if (command == "restart") {
-            uart.send(uart.mapId.USER_CMD, 0, NULL);
+
+    if (target == F("rbt")) {
+        if (command == F("restart")) {
+            uart.send(uart.mapId.RESTART, 0, NULL);
             delay(100);
             ESP.restart();
             return true;
         }
     }
 
-    else if (target == "esp32" || target == ESP32_STR) {
-        if (command == "restart") {
-            slog.println(logMes.esp32Restarting);
-            ESP.restart();
-        } else if (command == "memSave") {
+    else if (target == F("esp32")) {
+        if (command == F("ping")) {
+            uart.send(uart.mapId.PING, 0, NULL);
+        } else if (command == F("memSave")) {
             memory.save(value[0][0], value[1]);
-        } else if (command == "memGetAll") {
+        } else if (command == F("memGetAll")) {
             slog.println(memory.getAll());
-        } else if (command == "wifiBegin") {
+        } else if (command == F("wifiBegin")) {
             // if (valueCount >= 2) {
             //     wifi.connect();
             // } else {
@@ -189,42 +220,55 @@ bool commandRun(const String &target, const String &command, const String value[
             //     slog.add(String(valueCount));
             //     slog.println();
             // }
-        } else if (command == "wifiStatus") {
+        } else if (command == F("wifiStatus")) {
             // slog.println(wifi.isConnected() ? logMes.wifiConnected : logMes.wifiNotConnected);
-        } else if (command == "wifiLocalIP") {
+        } else if (command == F("wifiLocalIP")) {
             // slog.add(logMes.wifiLocalIP);
             // slog.add(wifi.getIP());
             // slog.println();
-        } else if (command == "freeHeap") {
-            slog.add("Free heap: ");
+        } else if (command == F("freeHeap")) {
+            slog.add(F("Free heap: "));
             slog.add(String(ESP.getFreeHeap()));
             slog.println();
-        } else if (command == "minFreeHeap") {
+        } else if (command == F("minFreeHeap")) {
             slog.add("Minimum free heap: ");
             slog.add(String(ESP.getMinFreeHeap()));
             slog.println();
-        } else if (command == "enableSerialLog") {
-            if (state.str(value[0])) {
-                serialLogState = true;
-                slog.enable(true);
-                if (!memory.save(epmPtr.logState, "1")) {
-                    slog.println(logMes.eepromSaveFailed);
-                }
-            } else {
-                serialLogState = false;
-                slog.enable(false);
-                slog.println("Serial log disabled");
+        } else if (command == F("enableLog")) {
+            serialLogState = state.str(value[0]);
+            slog.enable(serialLogState);
+            if (!memory.save(epmPtr.logState, serialLogState ? "1" : "0")) {
+                slog.println(logMes.eepromSaveFailed);
             }
-        } else if (command == "restart") {
+            slog.add(logMes.logStatus);
+            slog.add(serialLogState ? logMes.ON : logMes.OFF);
+            slog.println();
+        } else if (command == F("restart")) {
             slog.println(logMes.esp32Restarting);
-            ESP.restart();
+            espResetTimer = value[0].toInt() * 1000;
+        } else if (command == F("maxAllocHeap")) {
+            slog.add(F("Maximum alloc heap: "));
+            slog.add(String(ESP.getMaxAllocHeap()));
+            slog.println();
+        } else if (command == F("sleep")) {
+            if (value[0] == F("light")) {
+                espSleep(true, value[1].toInt());
+            } else if (value[0] == F("deep")) {
+                espSleep(false, value[1].toInt());
+            }
         } else {
             slog.println(logMes.invalidCommand);
             return false;
         }
-    } else if (target == "nano" ||target == NANO_STR) {
-        if (command == "sendCommand" && valueCount >= 1) {
+    } else if (target == F("nano")) {
+        if (command == F("sendCommand") && valueCount >= 1) {
             uart.send(uart.mapId.USER_CMD, 0, (byte*)value[0].c_str());
+        }
+    } else if (target == F("gmp")) {
+        if (command == F("battery")) {
+            slog.add(F("gamepad battery: "));
+            slog.add(gamepadState.battery_status);
+            slog.println();
         }
     } else {
         slog.add(logMes.invalidCommandTarget);
@@ -248,13 +292,13 @@ bool commandRun(const String &target, const String &command, const String value[
 
 /*
 =======================================
-                Core 1
+=============== Core 1 ================
 =======================================
 */
 void mainFunction(void *pvParameters) {
     static bool mainFunctionHasRunOnce = false;
     if (!mainFunctionHasRunOnce) {
-        slog.println("ESP32 is starting up");
+        slog.println("ESP32 is starting up!");
 
         motor.begin();
         motor2.begin();
@@ -262,9 +306,9 @@ void mainFunction(void *pvParameters) {
         servoAttach(barrelServo, pins.servo.barrelPuller);
         servo360Stop(barrelServo);
 
-        slog.enable(true);
         Serial.begin(115200);
-        uart.begin(uartCommand);
+        uart.begin(uartCommandRun);
+        
 
         memory.begin(512);
         serialLogState = memory.get(epmPtr.logState) == "1";
@@ -281,6 +325,7 @@ void mainFunction(void *pvParameters) {
 
         //Gamepad=========================================
         if (Ps3.isConnected()) {
+            gamepadIsConnected = true;
             GamepadState current_state = globalGamepadState.get();
             unsigned long current_millis = millis();
 
@@ -297,9 +342,15 @@ void mainFunction(void *pvParameters) {
 
             //Gamepad action=============================
             if (isGamepadChanged(current_state, last_state)) {
-                
-                // --- HEMAT MEMORI FLASH ---
-                // String panjang untuk log tombol telah dihapus untuk menghemat flash memory.
+
+                if (abs(current_state.stick_lx - last_state.stick_lx) > 2 || 
+                    abs(current_state.stick_ly - last_state.stick_ly) > 2 || 
+                    abs(current_state.stick_rx - last_state.stick_rx) > 2 || 
+                    abs(current_state.stick_ry - last_state.stick_ry) > 2) {
+                    Serial.printf("Joy L [X: %d, Y: %d] | Joy R [X: %d, Y: %d]\n", 
+                    current_state.stick_lx, current_state.stick_ly, 
+                    current_state.stick_rx, current_state.stick_ry);
+                }
 
                 // ==========================================
                 // KONTROL ARAH BARREL (Joy Kiri Y - Servo 360)
@@ -343,12 +394,15 @@ void mainFunction(void *pvParameters) {
                 last_state = current_state;
             }
             //Gamepad action end=========================
-        }
+        } else {
+            gamepadIsConnected = false;
+
         //Gamepad end================================
 
 
         //Serial communication================================
         if (Serial.available()) {
+            Serial.println(F("serial detected"));
             serialInput = Serial.readStringUntil('\n');
             serialInput.trim();
             // Bersihkan sisa variabel lama
@@ -361,16 +415,6 @@ void mainFunction(void *pvParameters) {
             slog.println("Received serial input: " + serialInput);
             slog.println("Hasil Parsing -> target: " + target + " | command: " + command + " | value: " + value[0]);
             
-            if (serialInput == "s") {
-                static bool isSerialInputEnabled = false; 
-                isSerialInputEnabled = !isSerialInputEnabled;
-                memory.save(epmPtr.logState, isSerialInputEnabled ? "1" : "0");
-                slog.enable(isSerialInputEnabled);
-                slog.add("Log status: ");
-                slog.add(isSerialInputEnabled ? "ON" : "OFF");
-                slog.println();
-            }
-
             if (target == "") {
                 slog.println(logMes.invalidCommandTarget);
             } else if (command == "") {
@@ -430,7 +474,6 @@ void mainFunction(void *pvParameters) {
                 isTimerActive = false;
                 espResetTimer = 0; 
 
-                delay(500);
                 ESP.restart();
             }
         }
@@ -438,7 +481,7 @@ void mainFunction(void *pvParameters) {
 
         static unsigned long coreLastMillis = 0;
         if (millis() - coreLastMillis >= 2000) {
-            slog.println("core one is alive");
+            slog.println("core 1 is alive");
             coreLastMillis = millis();
         }
 
@@ -492,7 +535,7 @@ void wlConnection(void *pvParameters) {
 
         // Backup state background ke Mutex Data secara kontinyu dari PS3 (Core 0)
         if (Ps3.isConnected()) {
-            globalGamepadState.set(GamepadState);
+            globalGamepadState.set(gamepadState);
         }
 
         if (millis() - lastMillis >= 400) {
@@ -507,7 +550,7 @@ void wlConnection(void *pvParameters) {
 
         static unsigned long coreLastMillis = 0;
         if (millis() - coreLastMillis >= 2000) {
-            slog.println("core zero is alive");
+            slog.println("core 0 is alive");
             coreLastMillis = millis();
         }
 
@@ -559,8 +602,3 @@ void loop(){
 
 
 //////////////////////////////////////////////////////////////
-
-
-
-
-

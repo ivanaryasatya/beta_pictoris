@@ -1,0 +1,194 @@
+time,jenis komunikasi,log
+15:07:34.493,RX,Hz
+15:07:34.494,RX,Hz
+15:07:34.495,RX,Hz
+15:07:34.499,RX,Hz
+15:07:34.501,RX,Hz
+15:07:34.503,RX,Hz
+15:07:34.504,RX,Hz
+15:07:34.505,RX,Hz
+15:07:34.506,RX,Hz
+15:07:34.507,RX,Hz
+15:07:34.508,RX,Hz
+15:07:34.510,RX,Hz
+15:07:34.511,RX,Hz
+15:07:34.512,RX,Hz
+15:07:34.513,RX,Hz
+15:07:34.515,RX,Hz
+15:07:34.517,RX,Hz
+15:07:34.518,RX,Hz
+15:07:34.519,RX,Hz
+15:07:34.520,RX,Hz
+15:07:34.521,RX,Hz
+15:07:34.522,RX,Hz
+15:07:34.524,RX,Hz
+15:07:34.525,RX,Hz
+15:07:34.526,RX,Hz
+15:07:34.527,RX,Hz
+15:07:34.528,RX,Hz
+15:07:34.529,RX,Hz
+15:07:34.541,RX,Hz
+15:07:34.543,RX,Hz
+15:07:34.544,RX,Hz
+15:07:34.545,RX,Hz
+15:07:34.547,RX,Hz
+15:07:34.550,RX,Hz
+15:07:34.552,RX,Hz
+15:07:34.553,RX,Hz
+15:07:34.554,RX,Hz
+15:07:34.555,RX,Hz
+15:07:34.556,RX,Hz
+15:07:34.557,RX,Hz
+15:07:34.558,RX,Hz
+15:07:34.559,RX,Hz
+15:07:34.560,RX,Hz
+15:07:34.561,RX,Hz
+15:07:34.562,RX,Hz
+15:07:34.563,RX,Hz
+15:07:34.566,RX,Hz
+15:07:34.567,RX,Hz
+15:07:34.568,RX,Hz
+15:07:34.570,RX,Hz
+15:07:34.574,RX,Hz
+15:07:34.575,RX,Hz
+15:07:34.576,RX,Hz
+15:07:34.577,RX,Hz
+15:07:34.578,RX,Hz
+15:07:34.579,RX,Hz
+15:07:34.580,RX,Hz
+15:07:34.583,RX,Hz
+15:07:34.584,RX,Hz
+15:07:34.586,RX,Hz
+15:07:34.587,RX,Hz
+15:07:34.587,RX,Hz
+15:07:34.588,RX,Hz
+15:07:34.590,RX,Hz
+15:07:34.591,RX,Hz
+15:07:34.592,RX,Hz
+15:07:34.593,RX,Hz
+15:07:34.594,RX,Hz
+15:07:34.595,RX,Hz
+15:07:34.596,RX,Hz
+15:07:34.598,RX,Hz
+15:07:34.601,RX,Hz
+15:07:34.602,RX,Hz
+15:07:34.603,RX,Hz
+15:07:34.604,RX,Hz
+15:07:34.605,RX,Hz
+15:07:34.606,RX,Hz
+15:07:34.607,RX,Hz
+15:07:34.608,RX,Hz
+15:07:34.609,RX,Hz
+15:07:34.610,RX,Hz
+15:07:34.610,RX,Hz
+15:07:34.612,RX,ets Jul 29 2019 12:21:46
+15:07:34.616,RX,"rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)"
+15:07:34.618,RX,"configsip: 0, SPIWP:0xee"
+15:07:34.621,RX,"clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00"
+15:07:34.623,RX,"mode:DIO, clock div:2"
+15:07:34.625,RX,"load:0x3fff0030,len:1184"
+15:07:34.626,RX,"load:0x40078000,len:13232"
+15:07:34.628,RX,"load:0x40080400,len:3028"
+15:07:34.630,RX,entry 0x400805e4
+15:07:35.554,RX,[INFO] Gamepad Controller Diinisialisasi. Menunggu koneksi PS3 di MAC: 00:70:07:26:53:2E
+15:07:35.966,RX,>> ESP32 [1002 ms]: Loop rate core1: 130 Hz
+15:07:36.967,RX,>> ESP32 [2002 ms]: Loop rate core1: 143 Hz
+15:07:36.968,RX,core 1 is alive
+15:07:36.975,RX,core 0 is alive
+15:07:37.966,RX,>> ESP32 [3002 ms]: Loop rate core1: 143 Hz
+15:07:38.967,RX,����������������������������������������������������������������> ESP32 [4002 ms]: Loop rate core1: 143 Hz
+15:07:38.969,RX,core 1 is alive
+15:07:38.985,RX,core 0 is alive
+15:07:39.967,RX,>> ESP32 [5003 ms]: Loop rate core1: 143 Hz
+15:07:40.968,RX,>> ESP32 [6004 ms]: Loop rate core1: 143 Hz
+15:07:40.970,RX,core 1 is alive
+15:07:40.995,RX,core 0 is alive
+15:07:41.969,RX,>> ESP32 [7005 ms]: Loop rate core1: 143 Hz
+15:07:42.971,RX,>> ESP32 [8006 ms]: Loop rate core1: 143 Hz
+15:07:42.972,RX,core 1 is alive
+15:07:43.005,RX,core 0 is alive
+15:07:43.971,RX,>> ESP32 [9007 ms]: Loop rate core1: 143 Hz
+15:07:44.972,RX,����������������������������������������������������������������ESP32 [10008 ms]: Loop rate core1: 143 Hz
+15:07:44.974,RX,core 1 is alive
+15:07:45.015,RX,core 0 is alive
+15:07:45.973,RX,>> ESP32 [11009 ms]: Loop rate core1: 143 Hz
+15:07:46.973,RX,>> ESP32 [12009 ms]: Loop rate core1: 143 Hz
+15:07:46.976,RX,core 1 is alive
+15:07:47.025,RX,core 0 is alive
+15:07:47.974,RX,>> ESP32 [13010 ms]: Loop rate core1: 143 Hz
+15:07:48.975,RX,>> ESP32 [14011 ms]: Loop rate core1: 143 Hz
+15:07:48.977,RX,core 1 is alive
+15:07:49.035,RX,core 0 is alive
+15:07:49.976,RX,>> ESP32 [15012 ms]: Loop rate core1: 143 Hz
+15:07:50.977,RX,>> ESP32 [16013 ms]: Loop rate core1: 143 Hz
+15:07:50.979,RX,core 1 is alive
+15:07:51.045,RX,core 0 is alive
+15:07:51.978,RX,>> ESP32 [17014 ms]: Loop rate core1: 143 Hz
+15:07:52.979,RX,>> ESP32 [18015 ms]: Loop rate core1: 143 Hz
+15:07:52.981,RX,core 1 is alive
+15:07:53.055,RX,core 0 is alive
+15:07:53.980,RX,>> ESP32 [19016 ms]: Loop rate core1: 143 Hz
+15:07:54.980,RX,>> ESP32 [20016 ms]: Loop rate core1: 143 Hz
+15:07:54.982,RX,core 1 is alive
+15:07:55.065,RX,core 0 is alive
+15:07:55.981,RX,>> ESP32 [21017 ms]: Loop rate core1: 143 Hz
+15:07:56.983,RX,>> ESP32 [22018 ms]: Loop rate core1: 143 Hz
+15:07:56.984,RX,core 1 is alive
+15:07:57.088,RX,core 0 is alive
+15:07:57.983,RX,>> ESP32 [23019 ms]: Loop rate core1: 143 Hz
+15:07:58.984,RX,>> ESP32 [24020 ms]: Loop rate core1: 143 Hz
+15:07:58.986,RX,core 1 is alive
+15:07:59.085,RX,core 0 is alive
+15:07:59.985,RX,>> ESP32 [25021 ms]: Loop rate core1: 143 Hz
+15:08:00.986,RX,>> ESP32 [26022 ms]: Loop rate core1: 143 Hz
+15:08:00.988,RX,core 1 is alive
+15:08:01.095,RX,core 0 is alive
+15:08:01.987,RX,>> ESP32 [27023 ms]: Loop rate core1: 143 Hz
+15:08:02.987,RX,>> ESP32 [28023 ms]: Loop rate core1: 143 Hz
+15:08:02.990,RX,core 1 is alive
+15:08:03.105,RX,core 0 is alive
+15:08:03.988,RX,>> ESP32 [29024 ms]: Loop rate core1: 143 Hz
+15:08:04.990,RX,>> ESP32 [30025 ms]: Loop rate core1: 143 Hz
+15:08:04.992,RX,core 1 is alive
+15:08:05.115,RX,core 0 is alive
+15:08:05.990,RX,>> ESP32 [31026 ms]: Loop rate core1: 143 Hz
+15:08:06.991,RX,>> ESP32 [32027 ms]: Loop rate core1: 143 Hz
+15:08:06.993,RX,core 1 is alive
+15:08:07.125,RX,core 0 is alive
+15:08:07.992,RX,>> ESP32 [33028 ms]: Loop rate core1: 143 Hz
+15:08:08.993,RX,>> ESP32 [34029 ms]: Loop rate core1: 143 Hz
+15:08:08.995,RX,core 1 is alive
+15:08:09.135,RX,core 0 is alive
+15:08:09.993,RX,>> ESP32 [35029 ms]: Loop rate core1: 143 Hz
+15:08:10.994,RX,>> ESP32 [36030 ms]: Loop rate core1: 143 Hz
+15:08:10.996,RX,core 1 is alive
+15:08:11.145,RX,core 0 is alive
+15:08:11.995,RX,>> ESP32 [37031 ms]: Loop rate core1: 143 Hz
+15:08:12.996,RX,>> ESP32 [38032 ms]: Loop rate core1: 143 Hz
+15:08:12.998,RX,core 1 is alive
+15:08:13.155,RX,core 0 is alive
+15:08:14.002,RX,>> ESP32 [39038 ms]: Loop rate core1: 144 Hz
+15:08:15.002,RX,>> ESP32 [40038 ms]: Loop rate core1: 143 Hz
+15:08:15.004,RX,core 1 is alive
+15:08:15.165,RX,core 0 is alive
+15:08:16.003,RX,>> ESP32 [41039 ms]: Loop rate core1: 143 Hz
+15:08:17.004,RX,>> ESP32 [42040 ms]: Loop rate core1: 143 Hz
+15:08:17.006,RX,core 1 is alive
+15:08:17.175,RX,core 0 is alive
+15:08:18.005,RX,>> ESP32 [43041 ms]: Loop rate core1: 143 Hz
+15:08:19.001,RX,core 1 is alive
+15:08:19.011,RX,>> ESP32 [44047 ms]: Loop rate core1: 144 Hz
+15:08:19.185,RX,core 0 is alive
+15:08:20.012,RX,>> ESP32 [45048 ms]: Loop rate core1: 143 Hz
+15:08:21.002,RX,core 1 is alive
+15:08:21.012,RX,>> ESP32 [46048 ms]: Loop rate core1: 143 Hz
+15:08:21.195,RX,core 0 is alive
+15:08:22.013,RX,>> ESP32 [47049 ms]: Loop rate core1: 143 Hz
+15:08:23.004,RX,core 1 is alive
+15:08:23.014,RX,>> ESP32 [48050 ms]: Loop rate core1: 143 Hz
+15:08:23.205,RX,core 0 is alive
+15:08:24.015,RX,>> ESP32 [49051 ms]: Loop rate core1: 143 Hz
+15:08:25.004,RX,core 1 is alive
+15:08:25.021,RX,>> ESP32 [50057 ms]: Loop rate core1: 144 Hz
+15:08:25.214,RX,core 0 is alive
+15:08:26.021,RX,>> ESP32 [51057 ms]: Loop rate core1: 143 Hz
