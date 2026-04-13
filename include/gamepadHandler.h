@@ -133,7 +133,7 @@ inline void initGamepad(const char* mac_address) {
     Ps3.attach(onPs3Event);
     Ps3.attachOnConnect(onPs3Connect);
     Ps3.begin(mac_address);
-    esp_bt_dev_set_device_name("Ilmi kontol");
+    esp_bt_dev_set_device_name("Beta Pictoris Robot");
     esp_bredr_tx_power_set(ESP_PWR_LVL_P9, ESP_PWR_LVL_P9);
 
     Serial.print("\n[INFO] Gamepad Controller Diinisialisasi.");

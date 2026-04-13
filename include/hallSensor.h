@@ -1,5 +1,6 @@
 #pragma once
 #include <Arduino.h>
+using cbyte = const byte;
 
 class HallSensor {
   private:
@@ -7,7 +8,7 @@ class HallSensor {
     uint16_t _threshold; 
 
   public:    
-    HallSensor(uint8_t pin, uint16_t threshold) : _pin(pin), _threshold(threshold) {}
+    HallSensor(cbyte pin, uint16_t threshold) : _pin(pin), _threshold(threshold) {}
     inline void begin() const {
         pinMode(_pin, INPUT);
     }

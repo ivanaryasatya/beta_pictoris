@@ -20,6 +20,9 @@
 #include "wheelDrive.h"
 #include "gamepadHandler.h"
 #include <pgmspace.h>
+#include "hallSensor.h"
+#include "irSensor.h"
+
 
 // #define WIFI_SSID secretData.WIFI_SSID
 // #define WIFI_PASSWORD secretData.WIFI_PASSWORD
@@ -73,10 +76,24 @@ int espSleepTime = -1;
 MotorDriver motor(pins.wheelDriver_r.ENA, pins.wheelDriver_r.IN1, pins.wheelDriver_r.IN2, pins.wheelDriver_r.IN3, pins.wheelDriver_r.IN4, pins.wheelDriver_r.ENB);
 MotorDriver motor2(pins.wheelDriver_l.ENA, pins.wheelDriver_l.IN1, pins.wheelDriver_l.IN2, pins.wheelDriver_l.IN3, pins.wheelDriver_l.IN4, pins.wheelDriver_l.ENB);
 
-// Instansiasi Eksekutor Kendaraan Mecanum (motor2 = Kiri, motor = Kanan)
 MecanumDrive mecanum(&motor2, &motor);
 Servo barrelServo;
+Servo pusherServo;
+Servo catcherServo;
+Servo megazineServo;
+Servo armServo;
 
+HallSensor rHallSensor(pins.hallSensor.right, 500);
+HallSensor lHallSensor(pins.hallSensor.left, 500);
+
+TCRT5000Analog irCather(pins.irSensor.catcher, 800);
+TCRT5000Analog irDropPoint(pins.irSensor.dropPoint, 800);
+TCRT5000Analog irShoot(pins.irSensor.shoot, 800);
+TCRT5000Analog irSpeedMotorRight(pins.irSensor.speedMotorRight, 800);
+TCRT5000Analog irSpeedMotorLeft(pins.irSensor.speedMotorLeft, 800);
+
+bool megazine[11] = {false, false, false, false, false, false, false, false, false, false, false};
+int currentMegazineSlot = 1; // Slot 1 dimulai dari drop point
 
 // Fungsi filter untuk menghindari spam output ke serial monitor
 bool isGamepadChanged(const GamepadState& current, const GamepadState& last) {
@@ -144,6 +161,70 @@ bool checkValue(const byte valueCount, const byte minCount) {
     }
     return true;
 }
+
+struct RobotAction {
+    byte maxArmAngle = 120;
+    byte minArmAngle = 0;
+    byte maxCatcherAngle = 20;
+    byte minCatcherAngle = 0;
+    byte maxPusherAngle = 180;
+    byte minPusherAngle = 0;
+
+    void setDefault() {
+        servo180(pusherServo, 0);
+        servo180(catcherServo, 0);
+        servo180(armServo, 0);
+    }
+
+    void takeBall() {
+        if (irCather.isDetected()) {
+            servo180(catcherServo, maxCatcherAngle);
+            delay(500);
+            servo180(armServo, maxArmAngle);
+            delay(500);
+            servo180(catcherServo, minCatcherAngle);
+            delay(500);
+            servo180(armServo, minArmAngle);
+        }
+    }
+
+    void shoot() {
+        servo180(pusherServo, maxPusherAngle);
+        delay(500);
+        servo180(pusherServo, minPusherAngle);
+        delay(500);
+    }
+
+    void rotateMegazine(bool rotateRight, byte targetCount = 1) {
+        byte currentCount = 0;
+        bool lastState = false;
+        
+        while (currentCount < targetCount && targetCount <= 11) {
+            static bool currentState = rHallSensor.isTriggered() && lHallSensor.isTriggered();
+            if (rotateRight) {
+                servo360Right(megazineServo, 40);
+                if (currentState && !lastState) {
+                    currentMegazineSlot = (currentMegazineSlot % 11) + 1;
+                }
+            } else {
+                servo360Left(megazineServo, 40);
+                if (currentState && !lastState) {
+                    currentMegazineSlot = (currentMegazineSlot == 1) ? 11 : currentMegazineSlot - 1;
+                }
+            }
+
+            if (currentState && !lastState) {
+                currentCount++;
+                megazine[currentMegazineSlot - 1] = irDropPoint.isDetected();
+            }
+            lastState = currentState;
+            delay(10);
+        }
+        
+        servo360Stop(megazineServo);
+    }
+
+} robotAction;
 
 // Fungsi cek boolean dari string
 //
@@ -245,7 +326,7 @@ bool commandRun(const String &target, const String &command, const String value[
             slog.println();
         } else if (command == F("restart")) {
             slog.println(logMes.esp32Restarting);
-            espResetTimer = value[0].toInt() * 1000;
+            ESP.restart();
         } else if (command == F("maxAllocHeap")) {
             slog.add(F("Maximum alloc heap: "));
             slog.add(String(ESP.getMaxAllocHeap()));
@@ -289,7 +370,6 @@ bool commandRun(const String &target, const String &command, const String value[
 
 
 
-
 /*
 =======================================
 =============== Core 1 ================
@@ -304,15 +384,23 @@ void mainFunction(void *pvParameters) {
         motor2.begin();
         mecanum.stop();
         servoAttach(barrelServo, pins.servo.barrelPuller);
-        servo360Stop(barrelServo);
+        servoAttach(pusherServo, pins.servo.pusher);
+        servoAttach(catcherServo, pins.servo.catcher);
+        servoAttach(megazineServo, pins.servo.megazine);
+        servoAttach(armServo, pins.servo.arm);
+
+        rHallSensor.begin();
+        lHallSensor.begin();
 
         Serial.begin(115200);
         uart.begin(uartCommandRun);
         
-
         memory.begin(512);
         serialLogState = memory.get(epmPtr.logState) == "1";
         slog.enable(serialLogState);
+
+        robotAction.setDefault();
+
         mainFunctionHasRunOnce = true;
     }
 
@@ -352,9 +440,7 @@ void mainFunction(void *pvParameters) {
                     current_state.stick_rx, current_state.stick_ry);
                 }
 
-                // ==========================================
-                // KONTROL ARAH BARREL (Joy Kiri Y - Servo 360)
-                // ==========================================
+                // barrel elevation
                 if (current_state.stick_ly < -20) { // Joystick ke Atas
                     int speed = map(current_state.stick_ly, -20, -128, 0, 90);
                     servo360Left(barrelServo, speed);
@@ -364,13 +450,24 @@ void mainFunction(void *pvParameters) {
                 } else {
                     servo360Stop(barrelServo);
                 }
+                
+                // Pusher action shoot (Triangle/Y button)
+                if (current_state.triangle && !last_state.triangle) {
+                    robotAction.shoot();
+                }
 
-                // ==========================================
-                // KONTROL MECANUM WHEELS
-                // ==========================================
-                // - Joy Kanan (X, Y) untuk Translasi (Strafe dan Maju/Mundur)
-                // - Joy Kiri (X) untuk Rotasi (Belok Kanan/Kiri)
-                // Nilai Y di-inverse karena ditekuk ke atas = negatif
+                // Arm action take ball (cross/A button)
+                if (current_state.cross && !last_state.cross) {
+                    robotAction.takeBall();
+                }
+
+                //
+                if (current_state.square && !last_state.square) {
+
+                }
+
+
+                // Mecanum wheel control
                 mecanum.drive(current_state.stick_rx, -current_state.stick_ry, current_state.stick_lx);
 
                 // Trigger Getaran Ringan
@@ -390,12 +487,12 @@ void mainFunction(void *pvParameters) {
                     last_rumble_burst = current_millis;
                     is_rumble_burst_active = true; 
                 }
-
                 last_state = current_state;
             }
             //Gamepad action end=========================
         } else {
             gamepadIsConnected = false;
+        }
 
         //Gamepad end================================
 
@@ -450,34 +547,6 @@ void mainFunction(void *pvParameters) {
             lastTime = millis();
         }
         
-        //ESP32 restart timer============================
-        static unsigned long resetTimerLastMillis = 0;
-        static bool isTimerActive = false;
-
-        if (espResetTimer > 0 && !isTimerActive) {
-            resetTimerLastMillis = millis();
-            isTimerActive = true;
-
-            slog.print(logMes.esp32WillRestartIn);
-            slog.print(String(espResetTimer / 1000));
-            slog.println(logMes.seconds);
-        } 
-
-        else if (espResetTimer <= 0 && isTimerActive) {
-            isTimerActive = false;
-            slog.println("Restart dibatalkan.");
-        }
-
-        if (isTimerActive) {
-            if (millis() - resetTimerLastMillis >= (unsigned long)espResetTimer) {
-                slog.println(logMes.esp32Restarting);
-                isTimerActive = false;
-                espResetTimer = 0; 
-
-                ESP.restart();
-            }
-        }
-        //ESP32 restart timer endl=========================
 
         static unsigned long coreLastMillis = 0;
         if (millis() - coreLastMillis >= 2000) {

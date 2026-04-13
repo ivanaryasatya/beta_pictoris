@@ -4,15 +4,22 @@ Axis 2: Right Joystick X            = Strafe (Right/Left)
 Axis 3: Right Joystick Y (inv)      = Forward/Backward
 
 Button 0: X                         = 
-Button 1: A                         = 
+Button 1: A                         = Reload Megazine
 Button 2: B                         = 
-Button 3: Y                         = Shoot
+Button 3: Y                         = pusher
 Button 4: Left Bumper               = 
 Button 5: Right Bumper              =
 Button 6: Left Trigger              =
 Button 7: Right Trigger             =
 Button 8: Back                      =
 Button 9: Start                     =
-Button 10: Left Joystick (click)    =
-Button 11: Right Joystick (click)   =
+Button 10: L/R Joystick (click)     = Rotate Megazine (L/R)
+Button 11: F/B Joystick (click)     = Set Barrel Angle
 Hat: Directional Pad (X, Y)         =
+
+
+
+A	Silang (Cross)	Bawah
+B	Lingkaran (Circle)	Kanan
+X	Kotak (Square)	Kiri
+Y	Segitiga (Triangle)	Atas
