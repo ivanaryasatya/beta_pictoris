@@ -79,18 +79,10 @@ MotorDriver motor2(pins.wheelDriver_l.ENA, pins.wheelDriver_l.IN1, pins.wheelDri
 MecanumDrive mecanum(&motor2, &motor);
 Servo barrelServo;
 Servo pusherServo;
-Servo catcherServo;
 Servo megazineServo;
-Servo armServo;
 
 HallSensor rHallSensor(pins.hallSensor.right, 500);
 HallSensor lHallSensor(pins.hallSensor.left, 500);
-
-TCRT5000Analog irCather(pins.irSensor.catcher, 800);
-TCRT5000Analog irDropPoint(pins.irSensor.dropPoint, 800);
-TCRT5000Analog irShoot(pins.irSensor.shoot, 800);
-TCRT5000Analog irSpeedMotorRight(pins.irSensor.speedMotorRight, 800);
-TCRT5000Analog irSpeedMotorLeft(pins.irSensor.speedMotorLeft, 800);
 
 bool megazine[11] = {false, false, false, false, false, false, false, false, false, false, false};
 int currentMegazineSlot = 1; // Slot 1 dimulai dari drop point
@@ -163,35 +155,34 @@ bool checkValue(const byte valueCount, const byte minCount) {
 }
 
 struct RobotAction {
-    byte maxArmAngle = 120;
-    byte minArmAngle = 0;
-    byte maxCatcherAngle = 20;
-    byte minCatcherAngle = 0;
-    byte maxPusherAngle = 180;
-    byte minPusherAngle = 0;
+    byte upArmAngle = 120;
+    byte downArmAngle = 0;
+    byte openCatcherAngle = 20;
+    byte closeCatherAngle = 0;
+    byte pusherPushAngle = 180;
+    byte pusherIdleAngle = 0;
 
     void setDefault() {
         servo180(pusherServo, 0);
-        servo180(catcherServo, 0);
-        servo180(armServo, 0);
     }
 
     void takeBall() {
-        if (irCather.isDetected()) {
-            servo180(catcherServo, maxCatcherAngle);
-            delay(500);
-            servo180(armServo, maxArmAngle);
-            delay(500);
-            servo180(catcherServo, minCatcherAngle);
-            delay(500);
-            servo180(armServo, minArmAngle);
-        }
+
+        uart.send(uart.mapId.servo.catcher.ANGLE, 1, (byte*)&closeCatherAngle); // tutup cather
+        delay(500);
+        uart.send(uart.mapId.servo.arm.ANGLE, 1, (byte*)&upArmAngle); //angkat lengan
+        delay(500);
+        uart.send(uart.mapId.servo.catcher.ANGLE, 1, (byte*)&openCatcherAngle); //buka cather
+        delay(500);
+        uart.send(uart.mapId.servo.arm.ANGLE, 1, (byte*)&downArmAngle); //turunkan lengan
+        delay(500);
+        
     }
 
     void shoot() {
-        servo180(pusherServo, maxPusherAngle);
+        servo180(pusherServo, pusherPushAngle);
         delay(500);
-        servo180(pusherServo, minPusherAngle);
+        servo180(pusherServo, pusherIdleAngle);
         delay(500);
     }
 
@@ -263,12 +254,34 @@ struct State {
     }
 } state;
 
-void uartCommandRun(byte uartCmd, byte id, byte *data, byte len) {
+struct IrSensorState {
+    bool catcher = false;
+    bool dropPoint = false;
+    bool shoot = false;
+    float speedMotorRight = 0;
+    float speedMotorLeft = 0;
+} irSensorState;
+
+bool uartCommandRun(byte uartCmd, byte id, byte *data, byte len) {
     if (uartCmd == uart.mapId.PING) {
         uart.send(uart.mapId.PONG, 0, NULL);
     } else if (uartCmd == uart.mapId.RESTART) {
         espResetTimer = data[0] * 1000;
     } else if (uartCmd == uart.mapId.USER_CMD) {
+        
+    } else if (uartCmd == uart.mapId.irSensor.CATCHER) {
+        irSensorState.catcher = true;
+    } else if (uartCmd == uart.mapId.irSensor.DROP_POINT) {
+        irSensorState.dropPoint = true;
+    } else if (uartCmd == uart.mapId.irSensor.SHOOT) {
+        irSensorState.shoot = true;
+    } else if (uartCmd == uart.mapId.irSensor.SPEED_MOTOR_RIGHT) {
+        irSensorState.speedMotorRight = data[0];
+    } else if (uartCmd == uart.mapId.irSensor.SPEED_MOTOR_LEFT) {
+        irSensorState.speedMotorLeft = data[0];
+    } else {
+        slog.println(logMes.invalidCommand);
+        return false;
     }
 }
 
@@ -385,9 +398,7 @@ void mainFunction(void *pvParameters) {
         mecanum.stop();
         servoAttach(barrelServo, pins.servo.barrelPuller);
         servoAttach(pusherServo, pins.servo.pusher);
-        servoAttach(catcherServo, pins.servo.catcher);
         servoAttach(megazineServo, pins.servo.megazine);
-        servoAttach(armServo, pins.servo.arm);
 
         rHallSensor.begin();
         lHallSensor.begin();

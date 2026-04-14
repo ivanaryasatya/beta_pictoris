@@ -47,10 +47,10 @@ struct MapId {
       cbyte SPEED = 0x10;
     } catcher;
 
-    struct LIFTER {
+    struct ARM {
       cbyte ANGLE = 0x11;
       cbyte SPEED = 0x12;
-    } lifter;
+    } arm;
 
     struct MEGAZINE {
       cbyte ANGLE = 0x13;
