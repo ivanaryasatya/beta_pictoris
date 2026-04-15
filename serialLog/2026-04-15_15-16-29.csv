@@ -1,0 +1,285 @@
+time,jenis komunikasi,log
+15:16:29.530,RX,ets Jul 29 2019 12:21:46
+15:16:29.535,RX,"rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)"
+15:16:29.538,RX,"configsip: 0, SPIWP:0xee"
+15:16:29.543,RX,"clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00"
+15:16:29.545,RX,"mode:DIO, clock div:2"
+15:16:29.548,RX,"load:0x3fff0030,len:1184"
+15:16:29.550,RX,"load:0x40078000,len:13232"
+15:16:29.552,RX,"load:0x40080400,len:3028"
+15:16:29.555,RX,entry 0x400805e4
+15:16:30.594,RX,[INFO] Gamepad Controller Diinisialisasi. Menunggu koneksi PS3 di MAC: 00:70:07:26:53:2E
+15:16:31.002,RX,E1004-
+15:16:31.004,RX,Loop rate core1: 130 Hz
+15:16:32.002,RX,E2005-
+15:16:32.004,RX,Loop rate core1: 143 Hz
+15:16:32.006,RX,E2005-
+15:16:32.007,RX,core 1 is alive
+15:16:32.011,RX,E2014-
+15:16:32.012,RX,core 0 is alive
+15:16:33.004,RX,E3007-
+15:16:33.006,RX,Loop rate core1: 143 Hz
+15:16:34.005,RX,E4008-
+15:16:34.007,RX,Loop rate core1: 143 Hz
+15:16:34.009,RX,E4008-
+15:16:34.011,RX,core 1 is alive
+15:16:34.021,RX,E4024-
+15:16:34.023,RX,core 0 is alive
+15:16:35.007,RX,E5010-
+15:16:35.009,RX,Loop rate core1: 143 Hz
+15:16:36.008,RX,E6011-
+15:16:36.010,RX,Loop rate core1: 143 Hz
+15:16:36.012,RX,E6011-
+15:16:36.013,RX,core 1 is alive
+15:16:36.031,RX,E6034-
+15:16:36.032,RX,core 0 is alive
+15:16:37.010,RX,E7012-
+15:16:37.012,RX,Loop rate core1: 143 Hz
+15:16:38.010,RX,E8013-
+15:16:38.012,RX,Loop rate core1: 143 Hz
+15:16:38.014,RX,E8013-
+15:16:38.015,RX,core 1 is alive
+15:16:38.041,RX,E8044-
+15:16:38.042,RX,core 0 is alive
+15:16:39.012,RX,E9014-
+15:16:39.013,RX,Loop rate core1: 143 Hz
+15:16:40.013,RX,E10015-
+15:16:40.014,RX,Loop rate core1: 143 Hz
+15:16:40.016,RX,E10015-
+15:16:40.017,RX,core 1 is alive
+15:16:40.051,RX,E10054-
+15:16:40.053,RX,core 0 is alive
+15:16:41.013,RX,E11016-
+15:16:41.015,RX,Loop rate core1: 143 Hz
+15:16:42.013,RX,E12016-
+15:16:42.016,RX,Loop rate core1: 143 Hz
+15:16:42.017,RX,E12016-
+15:16:42.019,RX,core 1 is alive
+15:16:42.061,RX,E12064-
+15:16:42.062,RX,core 0 is alive
+15:16:43.014,RX,E13017-
+15:16:43.016,RX,Loop rate core1: 143 Hz
+15:16:44.016,RX,E14018-
+15:16:44.018,RX,Loop rate core1: 143 Hz
+15:16:44.019,RX,E14018-
+15:16:44.020,RX,core 1 is alive
+15:16:44.071,RX,E14074-
+15:16:44.072,RX,core 0 is alive
+15:16:45.017,RX,E15020-
+15:16:45.019,RX,Loop rate core1: 143 Hz
+15:16:46.019,RX,����������������������������������������������������������������16021-
+15:16:46.021,RX,Loop rate core1: 143 Hz
+15:16:46.022,RX,E16021-
+15:16:46.024,RX,core 1 is alive
+15:16:46.081,RX,E16084-
+15:16:46.082,RX,core 0 is alive
+15:16:47.019,RX,E17022-
+15:16:47.040,RX,Loop rate core1: 143 Hz
+15:16:48.020,RX,E18023-
+15:16:48.022,RX,Loop rate core1: 143 Hz
+15:16:48.024,RX,E18023-
+15:16:48.026,RX,core 1 is alive
+15:16:48.091,RX,E18094-
+15:16:48.092,RX,core 0 is alive
+15:16:49.020,RX,E19023-
+15:16:49.023,RX,Loop rate core1: 143 Hz
+15:16:50.020,RX,E20023-
+15:16:50.022,RX,Loop rate core1: 143 Hz
+15:16:50.028,RX,E20030-
+15:16:50.029,RX,core 1 is alive
+15:16:50.101,RX,E20104-
+15:16:50.102,RX,core 0 is alive
+15:16:51.021,RX,E21024-
+15:16:51.023,RX,Loop rate core1: 143 Hz
+15:16:52.022,RX,E22025-
+15:16:52.025,RX,Loop rate core1: 143 Hz
+15:16:52.029,RX,E22032-
+15:16:52.031,RX,core 1 is alive
+15:16:52.111,RX,E22114-
+15:16:52.112,RX,core 0 is alive
+15:16:53.023,RX,E23026-
+15:16:53.025,RX,Loop rate core1: 143 Hz
+15:16:54.029,RX,E24032-
+15:16:54.033,RX,Loop rate core1: 144 Hz
+15:16:54.035,RX,E24032-
+15:16:54.036,RX,core 1 is alive
+15:16:54.120,RX,E24124-
+15:16:54.126,RX,core 0 is alive
+15:16:55.029,RX,E25032-
+15:16:55.031,RX,Loop rate core1: 143 Hz
+15:16:56.030,RX,E26033-
+15:16:56.032,RX,Loop rate core1: 143 Hz
+15:16:56.034,RX,E26033-
+15:16:56.035,RX,core 1 is alive
+15:16:56.131,RX,E26134-
+15:16:56.133,RX,core 0 is alive
+15:16:57.031,RX,E27034-
+15:16:57.033,RX,Loop rate core1: 143 Hz
+15:16:58.032,RX,E28035-
+15:16:58.034,RX,Loop rate core1: 143 Hz
+15:16:58.036,RX,E28035-
+15:16:58.037,RX,core 1 is alive
+15:16:58.141,RX,E28144-
+15:16:58.142,RX,core 0 is alive
+15:16:59.034,RX,E29037-
+15:16:59.036,RX,Loop rate core1: 143 Hz
+15:17:00.035,RX,E30038-
+15:17:00.037,RX,Loop rate core1: 143 Hz
+15:17:00.038,RX,E30038-
+15:17:00.039,RX,core 1 is alive
+15:17:00.150,RX,E30154-
+15:17:00.152,RX,core 0 is alive
+15:17:01.035,RX,E31038-
+15:17:01.037,RX,Loop rate core1: 143 Hz
+15:17:02.036,RX,E32039-
+15:17:02.038,RX,Loop rate core1: 143 Hz
+15:17:02.040,RX,E32039-
+15:17:02.041,RX,core 1 is alive
+15:17:02.161,RX,E32164-
+15:17:02.163,RX,core 0 is alive
+15:17:03.036,RX,E33039-
+15:17:03.038,RX,Loop rate core1: 143 Hz
+15:17:04.037,RX,E34040-
+15:17:04.040,RX,Loop rate core1: 143 Hz
+15:17:04.041,RX,E34040-
+15:17:04.043,RX,core 1 is alive
+15:17:04.170,RX,E34174-
+15:17:04.172,RX,core 0 is alive
+15:17:05.038,RX,E35041-
+15:17:05.040,RX,Loop rate core1: 143 Hz
+15:17:06.040,RX,E36042-
+15:17:06.042,RX,Loop rate core1: 143 Hz
+15:17:06.043,RX,E36042-
+15:17:06.045,RX,core 1 is alive
+15:17:06.180,RX,E36184-
+15:17:06.182,RX,core 0 is alive
+15:17:07.041,RX,E37044-
+15:17:07.043,RX,Loop rate core1: 143 Hz
+15:17:08.042,RX,E38045-
+15:17:08.044,RX,Loop rate core1: 143 Hz
+15:17:08.045,RX,E38045-
+15:17:08.047,RX,core 1 is alive
+15:17:08.190,RX,E38194-
+15:17:08.192,RX,core 0 is alive
+15:17:09.062,RX,E39045-
+15:17:09.083,RX,Loop rate core1: 143 Hz
+15:17:10.042,RX,E40045-
+15:17:10.044,RX,Loop rate core1: 143 Hz
+15:17:10.049,RX,E40052-
+15:17:10.051,RX,core 1 is alive
+15:17:10.201,RX,E40204-
+15:17:10.202,RX,core 0 is alive
+15:17:11.043,RX,E41046-
+15:17:11.045,RX,Loop rate core1: 143 Hz
+15:17:12.044,RX,E42047-
+15:17:12.046,RX,Loop rate core1: 143 Hz
+15:17:12.051,RX,E42054-
+15:17:12.053,RX,core 1 is alive
+15:17:12.211,RX,E42214-
+15:17:12.212,RX,core 0 is alive
+15:17:13.045,RX,E43048-
+15:17:13.047,RX,Loop rate core1: 143 Hz
+15:17:14.051,RX,E44054-
+15:17:14.053,RX,Loop rate core1: 144 Hz
+15:17:14.055,RX,E44054-
+15:17:14.056,RX,core 1 is alive
+15:17:14.220,RX,E44224-
+15:17:14.222,RX,core 0 is alive
+15:17:15.053,RX,E45056-
+15:17:15.055,RX,Loop rate core1: 143 Hz
+15:17:16.052,RX,E46055-
+15:17:16.053,RX,core 1 is alive
+15:17:16.059,RX,E46062-
+15:17:16.061,RX,Loop rate core1: 144 Hz
+15:17:16.230,RX,E46234-
+15:17:16.235,RX,core 0 is alive
+15:17:17.060,RX,E47063-
+15:17:17.062,RX,Loop rate core1: 143 Hz
+15:17:18.054,RX,E48057-
+15:17:18.056,RX,core 1 is alive
+15:17:18.061,RX,E48064-
+15:17:18.063,RX,Loop rate core1: 143 Hz
+15:17:18.241,RX,E48244-
+15:17:18.243,RX,core 0 is alive
+15:17:19.061,RX,E49064-
+15:17:19.063,RX,Loop rate core1: 143 Hz
+15:17:20.054,RX,E50057-
+15:17:20.056,RX,core 1 is alive
+15:17:20.061,RX,E50064-
+15:17:20.063,RX,Loop rate core1: 143 Hz
+15:17:20.251,RX,E50254-
+15:17:20.252,RX,core 0 is alive
+15:17:21.061,RX,E51064-
+15:17:21.063,RX,Loop rate core1: 143 Hz
+15:17:22.055,RX,E52058-
+15:17:22.057,RX,core 1 is alive
+15:17:22.062,RX,E52065-
+15:17:22.064,RX,Loop rate core1: 143 Hz
+15:17:22.260,RX,E52264-
+15:17:22.262,RX,core 0 is alive
+15:17:23.063,RX,E53066-
+15:17:23.065,RX,Loop rate core1: 143 Hz
+15:17:24.057,RX,E54060-
+15:17:24.058,RX,core 1 is alive
+15:17:24.064,RX,E54067-
+15:17:24.066,RX,Loop rate core1: 143 Hz
+15:17:24.271,RX,E54274-
+15:17:24.272,RX,core 0 is alive
+15:17:25.070,RX,E55073-
+15:17:25.072,RX,Loop rate core1: 144 Hz
+15:17:26.064,RX,E56066-
+15:17:26.065,RX,core 1 is alive
+15:17:26.070,RX,E56073-
+15:17:26.072,RX,Loop rate core1: 143 Hz
+15:17:26.280,RX,E56284-
+15:17:26.282,RX,core 0 is alive
+15:17:27.071,RX,E57074-
+15:17:27.073,RX,Loop rate core1: 143 Hz
+15:17:28.065,RX,E58068-
+15:17:28.067,RX,core 1 is alive
+15:17:28.072,RX,E58075-
+15:17:28.074,RX,Loop rate core1: 143 Hz
+15:17:28.290,RX,E58294-
+15:17:28.292,RX,core 0 is alive
+15:17:29.073,RX,E59076-
+15:17:29.075,RX,Loop rate core1: 143 Hz
+15:17:30.065,RX,E60068-
+15:17:30.066,RX,core 1 is alive
+15:17:30.079,RX,E60082-
+15:17:30.081,RX,Loop rate core1: 144 Hz
+15:17:30.300,RX,E60304-
+15:17:30.302,RX,core 0 is alive
+15:17:31.079,RX,E61082-
+15:17:31.081,RX,Loop rate core1: 143 Hz
+15:17:32.066,RX,E62069-
+15:17:32.068,RX,core 1 is alive
+15:17:32.080,RX,E62083-
+15:17:32.082,RX,Loop rate core1: 143 Hz
+15:17:32.311,RX,E62314-
+15:17:32.313,RX,core 0 is alive
+15:17:33.081,RX,E63084-
+15:17:33.083,RX,Loop rate core1: 143 Hz
+15:17:34.068,RX,E64071-
+15:17:34.070,RX,core 1 is alive
+15:17:34.082,RX,E64085-
+15:17:34.084,RX,Loop rate core1: 143 Hz
+15:17:34.320,RX,E64324-
+15:17:34.322,RX,core 0 is alive
+15:17:35.088,RX,E65091-
+15:17:35.090,RX,Loop rate core1: 144 Hz
+15:17:36.074,RX,E66077-
+15:17:36.075,RX,core 1 is alive
+15:17:36.088,RX,E66091-
+15:17:36.090,RX,Loop rate core1: 143 Hz
+15:17:36.331,RX,E66334-
+15:17:36.332,RX,core 0 is alive
+15:17:37.089,RX,E67092-
+15:17:37.091,RX,Loop rate core1: 143 Hz
+15:17:38.076,RX,E68079-
+15:17:38.077,RX,core 1 is alive
+15:17:38.090,RX,E68093-
+15:17:38.092,RX,Loop rate core1: 143 Hz
+15:17:38.340,RX,E68344-
+15:17:38.341,RX,core 0 is alive
+15:17:39.093,RX,����������������������������������������������������������������69094-
+15:17:39.095,RX,Loop rate core1: 143 Hz

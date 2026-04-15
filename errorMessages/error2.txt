@@ -1,0 +1,12 @@
+src/esp32/main.cpp: In function 'void mainFunction(void*)':
+src/esp32/main.cpp:419:20: error: invalid conversion from 'bool (*)(byte, byte, byte*, byte)' {aka 'bool (*)(unsigned char, unsigned char, unsigned char*, unsigned char)'} to 'CommandHandler' {aka 'void (*)(unsigned char, unsigned char, unsigned char*, unsigned char)'} [-fpermissive]
+         uart.begin(uartCommandRun);
+                    ^~~~~~~~~~~~~~
+In file included from src/esp32/main.cpp:13:
+include/uartProtocol.h:17:29: note:   initializing argument 1 of 'void UARTProtocol::begin(CommandHandler)'
+   void begin(CommandHandler handler) {
+              ~~~~~~~~~~~~~~~^~~~~~~
+src/esp32/main.cpp: In function 'bool uartCommandRun(byte, byte, byte*, byte)':
+src/esp32/main.cpp:301:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^

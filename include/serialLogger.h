@@ -3,22 +3,17 @@
 #include <Arduino.h>
 #include "firebaseHandler.h"
 
-#if defined(ESP32)
-  #define DEVICE_NAME "ESP32"
-#elif defined(ARDUINO_AVR_NANO)
-  #define DEVICE_NAME "NANO"
-#elif defined(ARDUINO_UNO)
-  #define DEVICE_NAME "UNO"
-#else
-  #define DEVICE_NAME "UNKNOWN"
-#endif
-
 class Logger {
   private:
     String buffer;
     bool enableLog = false;
     bool rtdbSyncLog = false;
     bool BTlog = false;
+    void startText() {
+      Serial.print(F("E"));
+      Serial.print(millis());
+      Serial.println(F("-"));
+    }
 
   public:
     void add(String text) {
@@ -40,28 +35,25 @@ class Logger {
             buffer = "";
             add(text);
           }
-      Serial.print(">> ");
-      Serial.print(DEVICE_NAME);
-      Serial.print(" [");
-      Serial.print(millis());
-      Serial.print(" ms]: ");
+      startText();
+
 
       Serial.print(buffer);
       clear();
     }
 
     void println(const String &text = "") {
+      // E1200:
       if (!enableLog) return;
       if (text != "") {
         buffer = "";
         addLine(text);
       }
 
-      Serial.print(">> ");
-      Serial.print(DEVICE_NAME);
-      Serial.print(" [");
+      Serial.print(F("E"));
       Serial.print(millis());
-      Serial.print(" ms]: ");
+      Serial.print(F("-"));
+
 
       Serial.println(buffer);
       clear();

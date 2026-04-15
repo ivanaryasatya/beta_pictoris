@@ -5,7 +5,7 @@ using cbyte = const byte;
 class HallSensor {
   private:
     const uint8_t _pin; 
-    uint16_t _threshold; 
+    int _threshold; 
 
   public:    
     HallSensor(cbyte pin, uint16_t threshold) : _pin(pin), _threshold(threshold) {}

@@ -1,0 +1,14 @@
+src\nano\main.cpp: In function 'void uartCommand(byte, byte, byte*, byte)':
+src\nano\main.cpp:72:55: error: taking address of temporary array
+     uart.send(uart.mapId.irSensor.CATCHER, 1, (byte[]){ (byte)(irCather.isDetected() ? 1 : 0) });
+                                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\nano\main.cpp:74:58: error: taking address of temporary array
+     uart.send(uart.mapId.irSensor.DROP_POINT, 1, (byte[]){ (byte)(irDropPoint.isDetected() ? 1 : 0) });
+                                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\nano\main.cpp:76:53: error: taking address of temporary array
+     uart.send(uart.mapId.irSensor.SHOOT, 1, (byte[]){ (byte)(irShoot.isDetected() ? 1 : 0) });
+                                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src\nano\main.cpp:79:83: error: 'class TCRT5000Analog' has no member named 'getSpeed'
+     uart.send(uart.mapId.irSensor.SPEED_MOTOR_RIGHT, 4, (byte*)&irSpeedMotorRight.getSpeed());
+                                                                                   ^~~~~~~~
+*** [.pio\build\nanoatmega168\src\nano\main.cpp.o] Error 1

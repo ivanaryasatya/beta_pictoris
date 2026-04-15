@@ -20,7 +20,6 @@
 #include "wheelDrive.h"
 #include "gamepadHandler.h"
 #include <pgmspace.h>
-#include "hallSensor.h"
 #include "irSensor.h"
 
 
@@ -71,7 +70,8 @@ bool is_rumble_burst_active = false;
 const unsigned long RUMBLE_BURST_DURATION = 200;
 const char* spaceStr = " ";
 int espResetTimer = -1;
-int espSleepTime = -1;
+unsigned long lastPingMillis = 0;
+unsigned long lastPongReceived = 0;
 
 MotorDriver motor(pins.wheelDriver_r.ENA, pins.wheelDriver_r.IN1, pins.wheelDriver_r.IN2, pins.wheelDriver_r.IN3, pins.wheelDriver_r.IN4, pins.wheelDriver_r.ENB);
 MotorDriver motor2(pins.wheelDriver_l.ENA, pins.wheelDriver_l.IN1, pins.wheelDriver_l.IN2, pins.wheelDriver_l.IN3, pins.wheelDriver_l.IN4, pins.wheelDriver_l.ENB);
@@ -81,11 +81,33 @@ Servo barrelServo;
 Servo pusherServo;
 Servo megazineServo;
 
-HallSensor rHallSensor(pins.hallSensor.right, 500);
-HallSensor lHallSensor(pins.hallSensor.left, 500);
-
 bool megazine[11] = {false, false, false, false, false, false, false, false, false, false, false};
 int currentMegazineSlot = 1; // Slot 1 dimulai dari drop point
+
+struct SensorState {
+    unsigned long ultrasonic = 0;
+
+    struct Ir {
+        bool catcher = false;
+        bool dropPoint = false;
+        bool shoot = false;
+        float speedMotorRight = 0;
+        float speedMotorLeft = 0;
+    } ir;
+    
+    struct Hall {
+        bool right = false;
+        bool left = false;
+        bool barrel = false;
+    } hall;;
+
+    struct Power {
+        byte battery = 0;
+        float voltage = 0;
+        float current = 0;
+    } power;
+
+} sensorState;
 
 // Fungsi filter untuk menghindari spam output ke serial monitor
 bool isGamepadChanged(const GamepadState& current, const GamepadState& last) {
@@ -117,12 +139,6 @@ bool isGamepadChanged(const GamepadState& current, const GamepadState& last) {
     if (current.ps != last.ps) return true;
 
     return false;
-}
-
-void uartPing(byte cmd, byte id, byte *data, byte len) {
-    if (cmd == uart.mapId.PING) {
-        uart.send(uart.mapId.PONG, 0, NULL);
-    }
 }
 
 
@@ -191,7 +207,7 @@ struct RobotAction {
         bool lastState = false;
         
         while (currentCount < targetCount && targetCount <= 11) {
-            static bool currentState = rHallSensor.isTriggered() && lHallSensor.isTriggered();
+            static bool currentState = sensorState.hall.right && sensorState.hall.left;
             if (rotateRight) {
                 servo360Right(megazineServo, 40);
                 if (currentState && !lastState) {
@@ -206,7 +222,7 @@ struct RobotAction {
 
             if (currentState && !lastState) {
                 currentCount++;
-                megazine[currentMegazineSlot - 1] = irDropPoint.isDetected();
+                megazine[currentMegazineSlot - 1] = sensorState.ir.dropPoint;
             }
             lastState = currentState;
             delay(10);
@@ -226,62 +242,60 @@ struct RobotAction {
 // true: >= 1
 // false: <= 0
 struct State {
-    // Menggunakan const String &s tetap menjaga kompatibilitas, 
-    // tapi kita akses sebagai c_str() agar lebih ringan saat pembandingan.
     bool str(const String &s) {
         const char* c = s.c_str();
 
-        if (strcmp(c, "1") == 0 || strcmp(c, "true") == 0 || strcmp(c, "on") == 0 || 
-            strcmp(c, "enable") == 0 || strcmp(c, "yes") == 0 || strcmp(c, "1") == 0) {
+        if (strcasecmp(c, "1") == 0 || strcasecmp(c, "true") == 0 || 
+            strcasecmp(c, "on") == 0 || strcasecmp(c, "enable") == 0 || 
+            strcasecmp(c, "yes") == 0) {
             return true;
         }
 
-        if (strcmp(c, "0") == 0 || strcmp(c, "false") == 0 || strcmp(c, "off") == 0 || 
-            strcmp(c, "disable") == 0 || strcmp(c, "no") == 0 || strcmp(c, "0") == 0){
+        if (strcasecmp(c, "0") == 0 || strcasecmp(c, "false") == 0 || 
+            strcasecmp(c, "off") == 0 || strcasecmp(c, "disable") == 0 || 
+            strcasecmp(c, "no") == 0) {
             return false;
         } 
+
         slog.println(logMes.invalidCommand);
         return false;
     }
 
-    // Fungsi num diperbaiki return type-nya menjadi bool agar konsisten
     bool num(const int number) {
         if (number >= 1) return true;
-        if (number <= 0) return false;
-        
-        slog.println(logMes.invalidCommand);
+        if (number == 0) return false;
         return false;
+    }
+
+    byte numReturn(const bool value) {
+        if (value) return 1;
+        return 0;
     }
 } state;
 
-struct IrSensorState {
-    bool catcher = false;
-    bool dropPoint = false;
-    bool shoot = false;
-    float speedMotorRight = 0;
-    float speedMotorLeft = 0;
-} irSensorState;
-
-bool uartCommandRun(byte uartCmd, byte id, byte *data, byte len) {
+void uartCommandRun(byte uartCmd, byte id, byte *data, byte len) {
     if (uartCmd == uart.mapId.PING) {
         uart.send(uart.mapId.PONG, 0, NULL);
+    } else if (uartCmd == uart.mapId.PONG) {
+        lastPongReceived = millis();
     } else if (uartCmd == uart.mapId.RESTART) {
         espResetTimer = data[0] * 1000;
     } else if (uartCmd == uart.mapId.USER_CMD) {
         
     } else if (uartCmd == uart.mapId.irSensor.CATCHER) {
-        irSensorState.catcher = true;
+        sensorState.ir.catcher = state.num(data[0]);
     } else if (uartCmd == uart.mapId.irSensor.DROP_POINT) {
-        irSensorState.dropPoint = true;
+        sensorState.ir.dropPoint = state.num(data[0]);
     } else if (uartCmd == uart.mapId.irSensor.SHOOT) {
-        irSensorState.shoot = true;
+        sensorState.ir.shoot = state.num(data[0]);
     } else if (uartCmd == uart.mapId.irSensor.SPEED_MOTOR_RIGHT) {
-        irSensorState.speedMotorRight = data[0];
+        sensorState.ir.speedMotorRight = *(float*)&data[0];
     } else if (uartCmd == uart.mapId.irSensor.SPEED_MOTOR_LEFT) {
-        irSensorState.speedMotorLeft = data[0];
+        sensorState.ir.speedMotorLeft = *(float*)&data[0];
+    } else if (uartCmd == uart.mapId.ULTRASONIC) {
+        sensorState.ultrasonic = *(unsigned long*)&data[0];
     } else {
         slog.println(logMes.invalidCommand);
-        return false;
     }
 }
 
@@ -400,10 +414,8 @@ void mainFunction(void *pvParameters) {
         servoAttach(pusherServo, pins.servo.pusher);
         servoAttach(megazineServo, pins.servo.megazine);
 
-        rHallSensor.begin();
-        lHallSensor.begin();
-
         Serial.begin(115200);
+        Serial1.begin(9600, SERIAL_8N1, pins.esp32Uart.rx, pins.esp32Uart.tx);
         uart.begin(uartCommandRun);
         
         memory.begin(512);
@@ -421,6 +433,12 @@ void mainFunction(void *pvParameters) {
 
     while (true) {
         uart.update();
+
+        // Ping Nano setiap 500ms
+        if (millis() - lastPingMillis >= 500) {
+            lastPingMillis = millis();
+            uart.send(uart.mapId.PING, 0, NULL);
+        }
 
         //Gamepad=========================================
         if (Ps3.isConnected()) {
