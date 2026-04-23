@@ -90,39 +90,120 @@
 #define NOTE_CS8 4435
 #define NOTE_D8  4699
 #define NOTE_DS8 4978
-#define REST      0#ifndef BUZZER_MUSIC_H
+#define REST      0
+#ifndef BUZZER_MUSIC_H
 #define BUZZER_MUSIC_H
+#endif
+
+#include "buzzerMelody.h"
 
 class BuzzerMusic {
   private:
-    int _pin;
+    byte _pin;
+    const unsigned int* _currentMelody = nullptr;
+    int _totalElements = 0;
+    int _currentIndex = 0;
+    int _wholenote = 0;
+    unsigned long _nextNoteTime = 0;
+    bool _isPlaying = false;
 
   public:
-    // Constructor untuk inisialisasi pin buzzer
     BuzzerMusic(int pin) {
       _pin = pin;
       pinMode(_pin, OUTPUT);
     }
 
-    /*
-     * Fungsi untuk memainkan melodi dengan format array gabungan [nada, durasi, nada, durasi...]
-     * @param melody[]   : Array yang berisi nada dan divider durasi
-     * @param totalElements : Jumlah total elemen dalam array (bukan jumlah pasang nada)
-     * @param tempo      : Kecepatan tempo lagu
-     */
-    void play(unsigned int melody[], int totalElements, unsigned int tempo) {
-      int wholenote = (60000 * 4) / tempo;
-      int divider = 0, noteDuration = 0;
-      for (int thisNote = 0; thisNote < totalElements; thisNote += 2) {
-        divider = melody[thisNote + 1];
-        if (divider > 0) {
-          noteDuration = (wholenote) / divider;
-        } else if (divider < 0) {
-          noteDuration = (wholenote) / abs(divider);
-        }
-        tone(_pin, melody[thisNote], noteDuration * 0.9);
-        delay(noteDuration);
-        noTone(_pin);
+    struct Melody {
+        const unsigned int startup[8] = {
+          523,  8,
+          659,  8,
+          784,  8,
+          1047, 4
+        };
+
+        const unsigned int controllerConnected[10] = {
+          1047, 16,
+          0,    16,
+          1047, 16, 
+          0,    8,
+          1319, 4 
+        };
+
+        const unsigned int melodyDisconnected[6] = {
+          1047, 8,
+          784, 8,
+          523, 2
+        };
+    } melody;
+
+    void play(byte mapNum, const unsigned int tempo = 120) {
+      slog.println("Buzzer play melody");
+      if (mapNum == buzzerMel.STARTUP) {
+        _currentMelody = melody.startup;
+        _totalElements = 8;
+      } else if (mapNum == buzzerMel.CTRL_CONNECTED) {
+        _currentMelody = melody.controllerConnected;
+        _totalElements = 10;
+      } else if (mapNum == buzzerMel.CTRL_DISCONNECTED) {
+        _currentMelody = melody.melodyDisconnected;
+        _totalElements = 6;
+      } else {
+        return;
       }
+      
+      _wholenote = (60000 * 4) / tempo;
+      _currentIndex = 0;
+      _nextNoteTime = millis();
+      _isPlaying = true;
+    }
+
+    void stop() {
+      _isPlaying = false;
+      noTone(_pin);
+    }
+
+    void update() {
+      if (!_isPlaying || _currentMelody == nullptr) return;
+
+      if (millis() >= _nextNoteTime) {
+        if (_currentIndex < _totalElements) {
+          int divider = _currentMelody[_currentIndex + 1];
+          int noteDuration = 0;
+
+          if (divider > 0) {
+            noteDuration = _wholenote / divider;
+          } else if (divider < 0) {
+            noteDuration = _wholenote / abs(divider);
+            noteDuration *= 1.5;
+          }
+
+          int frequency = _currentMelody[_currentIndex];
+          if (frequency == REST) {
+            noTone(_pin);
+          } else {
+            tone(_pin, frequency, noteDuration * 0.9);
+          }
+
+          _nextNoteTime = millis() + noteDuration;
+          _currentIndex += 2;
+        } else {
+          stop();
+        }
+      }
+    }
+
+    /**
+     * Memainkan satu nada tunggal (Non-blocking wrapper)
+     */
+    void playTone(int frequency, int durationMs) {
+      static unsigned int singleNote[2];
+      singleNote[0] = frequency;
+      singleNote[1] = 1; // Dummy divider
+      _wholenote = durationMs; 
+      _currentMelody = singleNote;
+      _totalElements = 2;
+      _currentIndex = 0;
+      _nextNoteTime = millis();
+      _isPlaying = true;
     }
 };

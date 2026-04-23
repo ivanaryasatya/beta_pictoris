@@ -21,84 +21,95 @@ public:
   
 
 struct MapId {
-  cbyte UART_HEADER    = 0xAA;
-  cbyte UART_FOOTER    = 0x55;
+  cbyte UART_HEADER        = 0xAA;
+  cbyte UART_FOOTER        = 0x55;
 
-  cbyte BUZZER         = 0x01;
-  cbyte RESTART        = 0x02;
-  cbyte USER_CMD       = 0x03;
-  cbyte PING           = 0x04;
-  cbyte PONG           = 0x05;
-  cbyte TIME           = 0x06;
-  cbyte HALL           = 0x07;
-  cbyte ULTRASONIC     = 0x08;
-  cbyte VALUE          = 0x09;
+  cbyte RESTART            = 0x02;
+  cbyte USER_CMD           = 0x03;
+  cbyte PING               = 0x04;
+  cbyte PONG               = 0x05;
+  cbyte TIME               = 0x06;
+  cbyte emergencyMode      = 0x07;
+  cbyte SET_DEFAULT        = 0x08;
+  cbyte VALUE              = 0x09;
+
+  struct Buzzer{
+    cbyte TONE = 0xD2;
+    cbyte MELODY = 0xFA;
+  } buzzer;
   
+  struct DHT11 {
+    cbyte TEMPERATURE      = 0x0A;
+    cbyte HUMIDITY         = 0x0B;
+  } temSensor;
+
+  struct Ultrasonic {
+    cbyte DISTANCE         = 0x0C;
+    cbyte SET_THRESHOLD    = 0x0D;
+  } ultrasonic;
+
+  struct HallSensors {
+    cbyte RIGHT            = 0x0E;
+    cbyte LEFT             = 0x0F;
+  } hall;
+
   struct IrSensors {
-    cbyte CATCHER           = 0x0A;
-    cbyte DROP_POINT        = 0x0B;
-    cbyte SHOOT             = 0x0C;
-    cbyte SPEED_MOTOR_RIGHT = 0x0D;
-    cbyte SPEED_MOTOR_LEFT  = 0x0E;
+    cbyte CATCHER          = 0x10;
+    cbyte DROP_POINT       = 0x11;
+    cbyte SHOOT            = 0x12;
+    cbyte SPEED_MOTOR_RIGHT= 0x13;
+    cbyte SPEED_MOTOR_LEFT = 0x14;
   } irSensor;
 
   struct Servos {
     struct CATCHER {
-      cbyte ANGLE = 0x0F;
-      cbyte SPEED = 0x10;
+      cbyte ANGLE          = 0x15;
+      cbyte SPEED          = 0x16;
     } catcher;
 
     struct ARM {
-      cbyte ANGLE = 0x11;
-      cbyte SPEED = 0x12;
+      cbyte ANGLE          = 0x17;
+      cbyte SPEED          = 0x18;
     } arm;
 
     struct MEGAZINE {
-      cbyte ANGLE = 0x13;
-      cbyte SPEED = 0x14;
+      cbyte ROTATE_R       = 0x19;
+      cbyte ROTATE_L       = 0x1A;
+      cbyte STOP           = 0x1B;
     } megazine;
 
     struct SHOOTER {
-      cbyte ANGLE = 0x15;
-      cbyte SPEED = 0x16;
+      cbyte ANGLE          = 0x1C;
+      cbyte SPEED          = 0x1D;
     } shooter;
 
     struct BARREL {
-      cbyte ANGLE = 0x17;
-      cbyte SPEED = 0x18;
+      cbyte UP             = 0x1E;
+      cbyte DOWN           = 0x1F;
     } barrel;
   } servo;
-  
-  struct Leds {
-    struct RIGHT {
-      cbyte ON  = 0x19;
-      cbyte OFF = 0x1A;
-    } right;
 
-    struct LEFT {
-      cbyte ON  = 0x1B;
-      cbyte OFF = 0x1C;
-    } left;
-
-    struct LASER {
-      cbyte ON  = 0x1D;
-      cbyte OFF = 0x1E;
-    } laser;
-  } led;
-  
   struct Motors {
     struct Right {
-      cbyte SPEED  = 0x1F;
+      cbyte SPEED          = 0x20;
     } right;
 
     struct Left {
-      cbyte SPEED  = 0x20;
+      cbyte SPEED          = 0x21;
     } left;
 
     struct Fan {
-      cbyte SPEED  = 0x21;
+      cbyte SPEED          = 0x22;
     } fan;
   } motor;
+
+  struct LedDriver {
+    struct bumper {
+      cbyte left           = 0x30;
+      cbyte right          = 0x31;
+    } bumper;
+    cbyte laser            = 0x32;
+  } led;
 
 } mapId;
 

@@ -6,6 +6,11 @@ class MecanumDrive {
 private:
     MotorDriver* leftDriver;
     MotorDriver* rightDriver;
+    unsigned long stopTime = 0;
+    int currentX = 0;
+    int currentY = 0;
+    int currentTurn = 0;
+    bool isTimedMove = false;
 
 public:
     /**
@@ -23,8 +28,44 @@ public:
      * @param x Kecepatan strafe/geser Kiri (-128) hingga Kanan (127)
      * @param y Kecepatan Maju (127) hingga Mundur (-128) 
      * @param turn Kecepatan rotasi Kiri (-128) hingga Kanan (127)
+     * @param duration Durasi bergerak dalam milidetik (0 untuk kontinu)
      */
-    void drive(int x, int y, int turn) {
+    void drive(int x, int y, int turn, unsigned long duration = 0) {
+        currentX = x;
+        currentY = y;
+        currentTurn = turn;
+
+        if (duration > 0) {
+            stopTime = millis() + duration;
+            isTimedMove = true;
+        } else if (x == 0 && y == 0 && turn == 0) {
+            stopTime = 0;
+            isTimedMove = false;
+        }
+
+        executeKinematics(currentX, currentY, currentTurn);
+    }
+
+    // Panggil fungsi ini terus-menerus di loop utama untuk mengecek background timer
+    void update() {
+        if (isTimedMove && stopTime > 0 && millis() >= stopTime) {
+            stopTime = 0;
+            isTimedMove = false;
+            currentX = 0; currentY = 0; currentTurn = 0;
+            executeKinematics(0, 0, 0); // Hentikan roda
+        }
+    }
+
+    /**
+     * @brief Menghentikan seluruh pergerakan robot
+     */
+    void stop() {
+        leftDriver->stop();
+        rightDriver->stop();
+    }
+
+private:
+    void executeKinematics(int x, int y, int turn) {
         // Filter Deadzone joystick (menghilangkan noise saat stik ditekan tengah)
         if (abs(x) < 10) x = 0;
         if (abs(y) < 10) y = 0;
@@ -61,13 +102,5 @@ public:
         leftDriver->setMotorB(bl);
         rightDriver->setMotorA(fr);
         rightDriver->setMotorB(br);
-    }
-
-    /**
-     * @brief Menghentikan seluruh pergerakan robot
-     */
-    void stop() {
-        leftDriver->stop();
-        rightDriver->stop();
     }
 };

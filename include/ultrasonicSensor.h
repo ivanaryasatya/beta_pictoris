@@ -4,8 +4,8 @@
 
 class UltrasonicSensor {
   private:
-    int trigPin;
-    int echoPin;
+    byte trigPin;
+    byte echoPin;
 
   public:
     // Constructor default

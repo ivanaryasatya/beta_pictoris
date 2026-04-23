@@ -3,28 +3,34 @@
 using cbyte = const byte;
 
 struct Pins {
+    cbyte buzzerPin = 4;
+    cbyte temSensor = 11;
+    cbyte EMERGENCY_BTN = 34;
+
     struct Uart {
         cbyte rx = 3;
         cbyte tx = 1;
     } esp32Serial;
+
     struct L298N_r {
-        cbyte IN1 = 0;
-        cbyte IN2 = 4;
-        cbyte IN3 = 0;
-        cbyte IN4 = 0;
-        cbyte ENA = 2;
-        cbyte ENB = 5;
+        cbyte IN1 = 18;
+        cbyte IN2 = 5;
+        cbyte IN3 = 4;
+        cbyte IN4 = 2;
+        cbyte ENA = 19;
+        cbyte ENB = 15;
     } wheelDriver_r;
 
     struct L298N_l {
-        cbyte IN1 = 0;
-        cbyte IN2 = 0;
-        cbyte IN3 = 18;
-        cbyte IN4 = 19;
-        cbyte ENA = 0;
+        cbyte IN1 = 27;
+        cbyte IN2 = 14;
+        cbyte IN3 = 12;
+        cbyte IN4 = 13;
+        cbyte ENA = 26;
         cbyte ENB = 23;
     } wheelDriver_l;
 
+    // solve
     struct LedDriver {
         struct bumper {
             cbyte left = 6;
@@ -54,6 +60,7 @@ struct Pins {
     struct HALL49E {
         cbyte right = 20;
         cbyte left = 21;
+        cbyte barrel = 22;
     } hallSensor;
 
     struct Esp32Uart {
@@ -103,6 +110,12 @@ struct Pins {
     struct buzzer {
         cbyte buzzerPin = 0;
     } buzzer;
+
+    struct Motor {
+        cbyte flywheelRight = 0;
+        cbyte flywheelLeft = 0;
+        cbyte fan = 0;
+    } motor;
 
 } pins;
 

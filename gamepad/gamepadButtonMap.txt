@@ -1,21 +1,22 @@
 Axis 0: Left Joystick X             = Rotate Right (Right/Left)
-Axis 1: Left Joystick Y (inv)       = 
-Axis 2: Right Joystick X            = Strafe (Right/Left)
+Axis 1: Left Joystick Y (inv)       = Set Barrel Angle (Up/Down)
+Axis 2: Right Joystick X            = Strafe (move Right/Left)
 Axis 3: Right Joystick Y (inv)      = Forward/Backward
 
-Button 0: X                         = 
-Button 1: A                         = Reload Megazine
-Button 2: B                         = 
-Button 3: Y                         = pusher
+Button 0: X                         = Led bumper Right & Left
+Button 1: A                         = emergency mode (ON/OFF)
+Button 2: B                         = buzzer (klakson)
+Button 3: Y                         = Reload Megazine
 Button 4: Left Bumper               = 
 Button 5: Right Bumper              =
 Button 6: Left Trigger              =
-Button 7: Right Trigger             =
+Button 7: Right Trigger             = Shoot
 Button 8: Back                      =
 Button 9: Start                     =
-Button 10: L/R Joystick (click)     = Rotate Megazine (L/R)
-Button 11: F/B Joystick (click)     = Set Barrel Angle
-Hat: Directional Pad (X, Y)         =
+Hat: Directional Pad X              = Rotate Megazine (rotate L/R)
+Hat: Directional Pad Y              = Flywheel speed (up/down)
+
+
 
 
 

@@ -3,7 +3,24 @@ import serial.tools.list_ports
 import threading
 import csv
 import os
+import sys
+import time
 from datetime import datetime
+
+# System Terminal Variables untuk non-blocking input
+print_lock = threading.Lock()
+current_input = ""
+
+def safe_print(msg):
+    global current_input
+    with print_lock:
+        # Hapus baris input saat ini
+        sys.stdout.write("\r" + " " * (3 + len(current_input)) + "\r")
+        # Print log RX / TX
+        sys.stdout.write(msg + "\n")
+        # Cetak ulang prompt
+        sys.stdout.write(">> " + current_input)
+        sys.stdout.flush()
 
 # --- PERBAIKAN LOKASI FOLDER ---
 # Mencari folder 'tools' secara absolut
@@ -62,8 +79,12 @@ def rx_thread(ser, log_file):
                     
                     # --- Tampilkan di Terminal ---
                     mcu_time_display = f"[{mcu_time}ms]" if mcu_time != "N/A" else "[N/A]"
-                    print(f"\r[{timestamp}] {mcu_time_display} [{device}] [RX] -> {payload}")
-                    print(">> ", end="", flush=True)
+                    msg = f"[{timestamp}] {mcu_time_display} [{device}] [RX] -> {payload}"
+                    if os.name == 'nt':
+                        safe_print(msg)
+                    else:
+                        print(f"\r{msg}")
+                        print(">> ", end="", flush=True)
                     # --- Catat ke CSV ---
                     write_to_csv(log_file, timestamp, mcu_time, device, "RX", payload)
         except Exception as e:
@@ -110,19 +131,70 @@ def main():
         thread.start()
 
         # Loop utama pengirim (TX)
-        while True:
-            tx_data = input(">> ")
+        if os.name == 'nt':
+            import msvcrt
+            global current_input
+            current_input = ""
+            sys.stdout.write(">> ")
+            sys.stdout.flush()
             
-            if tx_data.lower() == 'exit':
-                break
-            
-            if tx_data:
-                ser.write((tx_data + '\n').encode('utf-8'))
-                timestamp = get_timestamp_full()
-                # Tampilkan di terminal
-                print(f"[{timestamp}] [TX] Sent: {tx_data}")
-                # Catat ke CSV (TX dari PC tidak memiliki waktu MCU)
-                write_to_csv(full_log_path, timestamp, "N/A", "PC", "TX", tx_data)
+            while True:
+                if msvcrt.kbhit():
+                    char = msvcrt.getch()
+                    if char in (b'\x03', b'\x1a'): # Ctrl+C, Ctrl+Z
+                        raise KeyboardInterrupt
+                    elif char == b'\r':
+                        with print_lock:
+                            sys.stdout.write("\n")
+                            tx_data = current_input
+                            current_input = ""
+                        
+                        if tx_data.lower() == 'exit':
+                            break
+                        
+                        if tx_data:
+                            ser.write((tx_data + '\n').encode('utf-8'))
+                            timestamp = get_timestamp_full()
+                            msg = f"[{timestamp}] [TX] Sent: {tx_data}"
+                            safe_print(msg)
+                            write_to_csv(full_log_path, timestamp, "N/A", "PC", "TX", tx_data)
+                        else:
+                            with print_lock:
+                                sys.stdout.write(">> ")
+                                sys.stdout.flush()
+                    elif char in (b'\x08', b'\x7f'): # Backspace
+                        with print_lock:
+                            if len(current_input) > 0:
+                                current_input = current_input[:-1]
+                                sys.stdout.write("\b \b")
+                                sys.stdout.flush()
+                    elif char in (b'\xe0', b'\x00'): # special keys like arrows
+                        msvcrt.getch()
+                    else:
+                        try:
+                            # Tampilkan karakter yang diketik
+                            char_str = char.decode('utf-8')
+                            if char_str.isprintable():
+                                with print_lock:
+                                    current_input += char_str
+                                    sys.stdout.write(char_str)
+                                    sys.stdout.flush()
+                        except UnicodeDecodeError:
+                            pass
+                else:
+                    time.sleep(0.01)
+        else:
+            while True:
+                tx_data = input(">> ")
+                
+                if tx_data.lower() == 'exit':
+                    break
+                
+                if tx_data:
+                    ser.write((tx_data + '\n').encode('utf-8'))
+                    timestamp = get_timestamp_full()
+                    print(f"[{timestamp}] [TX] Sent: {tx_data}")
+                    write_to_csv(full_log_path, timestamp, "N/A", "PC", "TX", tx_data)
 
     except serial.SerialException as e:
         print(f"[ERROR] Gagal akses {port}: {e}")

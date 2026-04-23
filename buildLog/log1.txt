@@ -1,0 +1,64 @@
+*************************************************************************************************************************************************************************We found 16.61MB of unnecessary PlatformIO system data (temporary files, unnecessary packages, etc.).
+Use `pio system prune --dry-run` to list them or `pio system prune` to save disk space.
+ *  Terminal will be reused by tasks, press any key to close it. 
+
+ *  Executing task: C:\Users\ROG\.platformio\penv\Scripts\platformio.exe run 
+
+Processing esp32dev (platform: espressif32; board: esp32dev; framework: arduino)
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32dev.html
+PLATFORM: Espressif 32 (6.13.0) > Espressif ESP32 Dev Module
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES:
+ - framework-arduinoespressif32 @ 3.20017.241212+sha.dcc1105b
+ - tool-esptoolpy @ 2.41100.0 (4.11.0)
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 71 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- Firebase Arduino Client Library for ESP8266 and ESP32 @ 4.4.17
+|-- Adafruit MPU6050 @ 2.2.9
+|-- ESP32 BLE Keyboard @ 0.3.2
+|-- PS3 Controller Host @ 1.1.0+sha.416b7b5
+|-- Servo @ 1.3.0
+|-- EEPROM @ 2.0.0
+Building in release mode
+Retrieving maximum program size .pio\build\esp32dev\firmware.elf
+Checking size .pio\build\esp32dev\firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  12.4% (used 40620 bytes from 327680 bytes)
+Flash: [====      ]  35.3% (used 1108885 bytes from 3145728 bytes)
+===================================================================== [SUCCESS] Took 23.08 seconds =====================================================================
+
+Processing nanoatmega168 (platform: atmelavr; board: nanoatmega168; framework: arduino)
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/atmelavr/nanoatmega168.html
+PLATFORM: Atmel AVR (5.1.0) > Arduino Nano ATmega168
+HARDWARE: ATMEGA168 16MHz, 1KB RAM, 14KB Flash
+DEBUG: Current (simavr) External (simavr)
+PACKAGES:
+ - framework-arduino-avr @ 5.2.0
+ - toolchain-atmelavr @ 1.70300.191015 (7.3.0)
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 35 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- Servo @ 1.3.0
+|-- DHT sensor library @ 1.4.7
+Building in release mode
+Compiling .pio\build\nanoatmega168\src\nano\main.cpp.o
+Linking .pio\build\nanoatmega168\firmware.elf
+Checking size .pio\build\nanoatmega168\firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=====     ]  50.0% (used 512 bytes from 1024 bytes)
+Flash: [========= ]  85.3% (used 12224 bytes from 14336 bytes)
+====================================================================== [SUCCESS] Took 2.23 seconds ======================================================================
+Environment    Status    Duration
+-------------  --------  ------------
+esp32dev       SUCCESS   00:00:23.079
+nanoatmega168  SUCCESS   00:00:02.235
+====================================================================== 2 succeeded in 00:00:25.314 ======================================================================
